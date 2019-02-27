@@ -7,6 +7,9 @@ STEP_SIZE_XY = 1
 STEP_SIZE_ROT = 10
 ARENA_EDGE_TOLERANCE = 0.5
 
+# Global variable
+var l_value = 111
+
 # Calculates and actuates the flocking interaction
 function random_movement() {
   # Random rotation
@@ -17,13 +20,26 @@ function random_movement() {
   goto(speed, 0)
   rotate(offset_rot * math.pi / 180.0)
 
-  debug.print(get35())
+  var c_value = get35() - id
+
+  neighbors.listen("key",
+    function(vid, value, rid) {
+        log("Got (", vid, ",", value, ") from robot #", rid)
+        l_value = 222
+    }
+  )
+
+  neighbors.broadcast("key", c_value)
+  
+  debug.print(l_value)
+
 }
 
 # Executed at init time
 function init() {
   debug.trajectory.enable(10000)
   takeoff()
+  debug.print(id)
 }
  
 # Executed every time step

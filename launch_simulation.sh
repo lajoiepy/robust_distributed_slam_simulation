@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Ideally through cmake
+
 # Build Buzz
 mkdir buzz/build
 cd buzz/build
