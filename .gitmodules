@@ -1,0 +1,3 @@
+[submodule "Buzz"]
+	path = buzz
+	url = https://github.com/lajoiepy/Buzz.git
