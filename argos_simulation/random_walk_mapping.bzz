@@ -2,8 +2,8 @@ include "buzz_includes/vec2.bzz"
 include "buzz_includes/string.bzz"
  
 # Constants
-MAX_TRANS_SPEED = 0.5
-MAX_ROT_SPEED = 10
+MAX_TRANS_SPEED = 0.05
+MAX_ROT_SPEED = 20
 ARENA_SIZE = 20.0
 ARENA_EDGE_TOLERANCE = 0.5
 
@@ -43,7 +43,8 @@ function random_movement() {
 
   log("2: Robot ", id, ": OX:", offset_x, " OY:", offset_y)
 
-  move(offset_x, offset_y, offset_z)
+  #goto_abs(offset_x, offset_y, offset_z)
+  move_forward(MAX_TRANS_SPEED)
 
   neighbors.listen("key",
     function(vid, value, rid) {
