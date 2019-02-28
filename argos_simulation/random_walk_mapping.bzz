@@ -1,0 +1,76 @@
+include "buzz_includes/vec2.bzz"
+include "buzz_includes/string.bzz"
+ 
+# Constants
+MAX_TRANS_SPEED = 0.5
+MAX_ROT_SPEED = 10
+ARENA_SIZE = 20.0
+ARENA_EDGE_TOLERANCE = 0.5
+
+# Global variable
+var l_value = 111
+
+# Calculates and actuates the flocking interaction
+function random_movement() {
+  # Rotation
+  var offset_rot = rand_uniform(-MAX_ROT_SPEED, MAX_ROT_SPEED)
+  rotate(offset_rot * math.pi / 180.0)
+
+  # Translation
+  var offset_x = rand_uniform(-MAX_TRANS_SPEED*100, MAX_TRANS_SPEED*100)/100
+  var offset_y = rand_uniform(-MAX_TRANS_SPEED*100, MAX_TRANS_SPEED*100)/100
+  log("1: Robot ", id, ": OX:", offset_x, " OY:", offset_y)
+  var offset_z = 0
+  
+  if (math.abs(math.abs(pose.position.x)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE) {
+    log("Robot ", id, ": Under TOL!")
+    if (pose.position.x > 0){
+      offset_x = -MAX_TRANS_SPEED
+    }
+    if (pose.position.x < 0){
+      offset_x = MAX_TRANS_SPEED
+    }  
+  }
+  if (math.abs(math.abs(pose.position.y)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE){
+    log("Robot ", id, ": Under TOL!")
+    if (pose.position.y > 0){
+      offset_y = -MAX_TRANS_SPEED
+    }
+    if (pose.position.y < 0){
+      offset_y = MAX_TRANS_SPEED
+    }
+  }
+
+  log("2: Robot ", id, ": OX:", offset_x, " OY:", offset_y)
+
+  move(offset_x, offset_y, offset_z)
+
+  neighbors.listen("key",
+    function(vid, value, rid) {
+        #log("Got (", vid, ",", value, ") from robot #", rid)
+        l_value = 222
+    }
+  )
+
+  neighbors.broadcast("key", l_value)
+  
+  #debug.print("X:", pose.position.x, ", Y:", pose.position.y,", Z:", pose.position.z)
+  #debug.print("X:", pose.position.x, ", Y:", pose.position.y,", Z:", pose.position.z, " OFFSET : X:", offset_x, ", Y:", offset_y,", Z:", offset_z, "  ARENA_SIZE/2:", ARENA_SIZE/2, "  RESULT:", math.abs(math.abs(pose.position.x)-ARENA_SIZE/2), "  TOL: ", ARENA_EDGE_TOLERANCE)
+
+}
+
+# Executed at init time
+function init() {
+  debug.trajectory.enable(10000)
+  srand(id)
+  takeoff()
+}
+ 
+# Executed every time step
+function step() {
+  random_movement()
+}
+ 
+# Execute at exit
+function destroy() {
+}

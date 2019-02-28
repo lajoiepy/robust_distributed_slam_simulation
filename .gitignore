@@ -2,3 +2,5 @@ buzz/build
 
 *.bo
 *.bdb
+*bzz.*
+*.vscode/

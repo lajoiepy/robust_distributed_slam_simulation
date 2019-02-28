@@ -10,7 +10,7 @@ sudo make install
 
 # Compile Buzz script
 cd ../../argos_simulation
-bzzc random_trajectory.bzz
+bzzc random_walk_mapping.bzz
 
 # Launch simulation
 argos3 -c robust_distributed_slam.argos
