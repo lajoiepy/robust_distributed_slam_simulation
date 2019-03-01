@@ -3,9 +3,9 @@ include "buzz_includes/string.bzz"
  
 # Constants
 MAX_TRANS_SPEED = 0.05
-MAX_ROT_SPEED = 20
+MAX_ROT_SPEED = 15
 ARENA_SIZE = 20.0
-ARENA_EDGE_TOLERANCE = 0.5
+ARENA_EDGE_TOLERANCE = 2.0
 
 # Global variable
 var l_value = 111
@@ -13,56 +13,72 @@ var l_value = 111
 # Calculates and actuates the flocking interaction
 function random_movement() {
   # Rotation
-  var offset_rot = rand_uniform(-MAX_ROT_SPEED, MAX_ROT_SPEED)
-  rotate(offset_rot * math.pi / 180.0)
-
-  # Translation
-  var offset_x = rand_uniform(-MAX_TRANS_SPEED*100, MAX_TRANS_SPEED*100)/100
-  var offset_y = rand_uniform(-MAX_TRANS_SPEED*100, MAX_TRANS_SPEED*100)/100
-  log("1: Robot ", id, ": OX:", offset_x, " OY:", offset_y)
-  var offset_z = 0
+  var cur_yaw = ((pose.orientation.yaw % (2. * math.pi)) / math.pi) * 180
+  var offset_yaw = rand_uniform(-MAX_ROT_SPEED, MAX_ROT_SPEED)
   
+  # Avoid the walls
   if (math.abs(math.abs(pose.position.x)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE) {
-    log("Robot ", id, ": Under TOL!")
     if (pose.position.x > 0){
-      offset_x = -MAX_TRANS_SPEED
+      if (cur_yaw < 90) {
+        offset_yaw = offset_yaw + MAX_ROT_SPEED
+      }
+      if (cur_yaw > 270) {
+        offset_yaw = offset_yaw - MAX_ROT_SPEED
+      }
     }
     if (pose.position.x < 0){
-      offset_x = MAX_TRANS_SPEED
+      if (cur_yaw < 270 and cur_yaw > 180) {
+        offset_yaw = offset_yaw + MAX_ROT_SPEED
+      }
+      if (cur_yaw > 90 and cur_yaw < 180) {
+        offset_yaw = offset_yaw - MAX_ROT_SPEED
+      }
     }  
   }
   if (math.abs(math.abs(pose.position.y)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE){
-    log("Robot ", id, ": Under TOL!")
     if (pose.position.y > 0){
-      offset_y = -MAX_TRANS_SPEED
+      if (cur_yaw < 180 and cur_yaw > 90) {
+        offset_yaw = offset_yaw + MAX_ROT_SPEED
+      }
+      if (cur_yaw < 90) {
+        offset_yaw = offset_yaw - MAX_ROT_SPEED
+      }
     }
     if (pose.position.y < 0){
-      offset_y = MAX_TRANS_SPEED
+      if (cur_yaw < 360 and cur_yaw > 270) {
+        offset_yaw = offset_yaw + MAX_ROT_SPEED
+      }
+      if (cur_yaw < 270 and cur_yaw > 180) {
+        offset_yaw = offset_yaw - MAX_ROT_SPEED
+      }
     }
   }
 
-  log("2: Robot ", id, ": OX:", offset_x, " OY:", offset_y)
+  rotate(offset_yaw * math.pi / 180.0)
 
-  #goto_abs(offset_x, offset_y, offset_z)
+  # Translation
   move_forward(MAX_TRANS_SPEED)
 
+  # TESTS
   neighbors.listen("key",
     function(vid, value, rid) {
-        #log("Got (", vid, ",", value, ") from robot #", rid)
         l_value = 222
     }
   )
 
   neighbors.broadcast("key", l_value)
-  
-  #debug.print("X:", pose.position.x, ", Y:", pose.position.y,", Z:", pose.position.z)
-  #debug.print("X:", pose.position.x, ", Y:", pose.position.y,", Z:", pose.position.z, " OFFSET : X:", offset_x, ", Y:", offset_y,", Z:", offset_z, "  ARENA_SIZE/2:", ARENA_SIZE/2, "  RESULT:", math.abs(math.abs(pose.position.x)-ARENA_SIZE/2), "  TOL: ", ARENA_EDGE_TOLERANCE)
-
 }
 
 # Executed at init time
 function init() {
-  debug.trajectory.enable(10000)
+  var nr_robots = 10
+  var float_id = float(id)
+  var r = int((float_id/(nr_robots/2)) * 200)
+  var g = int(math.abs(float_id - (nr_robots/2))/(nr_robots/2) * 200)
+  var b = int(200 - float_id*(200/nr_robots))
+
+  debug.print("r:", r, " g:", g, " b:", b)
+  debug.trajectory.enable(10000, r, g, b)
   srand(id)
   takeoff()
 }
