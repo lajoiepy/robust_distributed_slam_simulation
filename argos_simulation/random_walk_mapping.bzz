@@ -76,7 +76,7 @@ function init() {
   var r = int((float_id/(nr_robots/2)) * 200)
   var g = int(math.abs(float_id - (nr_robots/2))/(nr_robots/2) * 200)
   var b = int(200 - float_id*(200/nr_robots))
-  
+
   debug.trajectory.enable(10000, r, g, b)
   srand(id)
   takeoff()
