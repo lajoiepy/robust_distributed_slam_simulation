@@ -2,13 +2,22 @@ include "buzz_includes/vec2.bzz"
 include "buzz_includes/string.bzz"
  
 # Constants
-MAX_TRANS_SPEED = 0.05
+TRANS_SPEED = 1.0
 MAX_ROT_SPEED = 15
-ARENA_SIZE = 20.0
-ARENA_EDGE_TOLERANCE = 2.0
+ARENA_SIZE = 200.0
+ARENA_EDGE_TOLERANCE = 15.0
+
+# Utilitary function
+function table_copy(t) {
+  var t2 = {}
+  foreach(t, function(key, value) {
+      t2[key] = value
+    })
+  return t2
+}
 
 # Global variable
-var l_value = 111
+var pose_id_ = 0
 
 # Calculates and actuates the flocking interaction
 function random_movement() {
@@ -57,16 +66,49 @@ function random_movement() {
   rotate(offset_yaw * math.pi / 180.0)
 
   # Translation
-  move_forward(MAX_TRANS_SPEED)
+  pose_id_ = move_forward(TRANS_SPEED)
+}
 
-  # TESTS
-  neighbors.listen("key",
-    function(vid, value, rid) {
-        l_value = 222
+# Function to detect inter-robot loop closures and save them
+function loop_closure_detection() {
+  # Loop closures
+  # Broadcast estimate
+  estimate = {
+    .x = pose.position.x,
+    .y = pose.position.y,
+    .z = pose.position.z,
+    .yaw = pose.orientation.yaw,
+    .pose_id = pose_id_
+  } # Get estimate from controller
+  ground_truth = {
+    .x = pose.position.x,
+    .y = pose.position.y,
+    .z = pose.position.z,
+    .yaw = pose.orientation.yaw
+  }
+  current_estimate = {
+    .estimate = estimate,
+    .ground_truth = ground_truth # To compute the fake loop closure measurement
+  }
+  neighbors.broadcast("current_estimate", current_estimate)
+
+  # Listen to neighbor estimates
+  neighbors.listen("current_estimate",
+    function(vid, value, rid) {     
+      # Display loop closure
+      diff_x = value.ground_truth.x - pose.position.x
+      diff_y = value.ground_truth.y - pose.position.y
+      display_z = value.ground_truth.z - pose.position.z
+      rot_angle = pose.orientation.yaw
+      display_x = diff_x * math.cos(rot_angle) + diff_y * math.sin(rot_angle)
+      display_y = -diff_x * math.sin(rot_angle) + diff_y * math.cos(rot_angle)
+
+      debug.rays.add(0,200,0, display_x,display_y,display_z)
+      # Add fake loop closure factor in the graph
+      add_fake_rendezvous_loop_closures(value.estimate.x, value.estimate.y, value.estimate.z, value.estimate.yaw, value.estimate.pose_id,
+                        value.ground_truth.x, value.ground_truth.y, value.ground_truth.z, value.ground_truth.yaw, rid)
     }
   )
-
-  neighbors.broadcast("key", l_value)
 }
 
 # Executed at init time
@@ -84,7 +126,10 @@ function init() {
  
 # Executed every time step
 function step() {
+  # Move
   random_movement()
+  # Loop closure detection
+  loop_closure_detection()
 }
  
 # Execute at exit
