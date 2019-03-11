@@ -15,7 +15,7 @@
   <!-- *************** -->
   <controllers>
 
-    <buzz_controller_quadmapper id="bcs">
+    <buzz_controller_quadmapper_no_sensing id="bcs">
       <actuators>
         <quadrotor_position implementation="default" />
         <range_and_bearing  implementation="default" />
@@ -27,7 +27,7 @@
       </sensors>
       <params bytecode_file="random_walk_mapping.bo"
               debug_file="random_walk_mapping.bdb" />
-    </buzz_controller_quadmapper>
+    </buzz_controller_quadmapper_no_sensing>
 
   </controllers>
 

@@ -66,7 +66,7 @@ function random_movement() {
   rotate(offset_yaw * math.pi / 180.0)
 
   # Translation
-  pose_id_ = move_forward(TRANS_SPEED)
+  pose_id_ = move_forward_fake_odometry(TRANS_SPEED)
 }
 
 # Function to detect inter-robot loop closures and save them
@@ -103,10 +103,11 @@ function loop_closure_detection() {
       display_x = diff_x * math.cos(rot_angle) + diff_y * math.sin(rot_angle)
       display_y = -diff_x * math.sin(rot_angle) + diff_y * math.cos(rot_angle)
 
+      # Separator visualization
       debug.rays.add(0,200,0, display_x,display_y,display_z)
       # Add fake loop closure factor in the graph
       add_fake_rendezvous_loop_closures(value.estimate.x, value.estimate.y, value.estimate.z, value.estimate.yaw, value.estimate.pose_id,
-                        value.ground_truth.x, value.ground_truth.y, value.ground_truth.z, value.ground_truth.yaw, rid)
+                      value.ground_truth.x, value.ground_truth.y, value.ground_truth.z, value.ground_truth.yaw, rid)
     }
   )
 }
