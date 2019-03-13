@@ -68,36 +68,16 @@ function random_movement() {
 function loop_closure_detection() {
 
   # Add fake loop closure on every rendez-vous
-  if (is_there_a_new_other_robot_pose_ and pose_id_>3) {
+  if (is_there_a_new_other_robot_pose_) {
     # Add fake loop closure factor in the graph
     compute_fake_rendezvous_loop_closures(current_other_robot_ground_truth_pose_.value.pose_id, current_other_robot_ground_truth_pose_.value.x, 
                                       current_other_robot_ground_truth_pose_.value.y, current_other_robot_ground_truth_pose_.value.z, 
-                                      current_other_robot_ground_truth_pose_.value.yaw, current_other_robot_ground_truth_pose_.rid, pose_id_-2)
+                                      current_other_robot_ground_truth_pose_.value.yaw, current_other_robot_ground_truth_pose_.rid, pose_id_)
     is_there_a_new_other_robot_pose_ = 0  
     is_there_a_new_loop_closure_measurement_ = 1
 
-    # Vizualization
-    #diff_x = current_loop_closure_measurement.x
-    #diff_y = current_loop_closure_measurement.y
-    #display_z = current_loop_closure_measurement.z
-    #log("")
-    #log("current poseID:", pose_id_)
-    #log("robot1ID:", current_loop_closure_measurement.robot_1_pose_id, " robot2ID:", current_loop_closure_measurement.robot_2_pose_id)
-    #log("q_x:",current_loop_closure_measurement.q_x, " q_y:",current_loop_closure_measurement.q_y, " q_z:",current_loop_closure_measurement.q_z, " q_w:",current_loop_closure_measurement.q_w)
-    #rot_angle = 2*math.acos(current_loop_closure_measurement.q_w) + last_poses[2].orientation.yaw;
-    #log("Robot yaw:", pose.orientation.yaw, " Measurement Yaw:", rot_angle)
-    #log("diff_x:", diff_x, " diff_y:", diff_y)
-    #log("")
-    #display_x = diff_x * math.cos(rot_angle) + diff_y * math.sin(rot_angle)
-    #display_y = -diff_x * math.sin(rot_angle) + diff_y * math.cos(rot_angle)
-
-    #previous_x = (last_poses[2].position.x-pose.position.x) * math.cos(pose.orientation.yaw) + (last_poses[2].position.y-pose.position.y) * math.sin(pose.orientation.yaw)
-    #previous_y = -(last_poses[2].position.x-pose.position.x) * math.sin(pose.orientation.yaw) + (last_poses[2].position.y-pose.position.y) * math.cos(pose.orientation.yaw)
-    #previous_yaw = last_poses[2].orientation.yaw - pose.orientation.yaw + rot_angle
-
-    #display_x = previous_x + (diff_x) * math.cos(previous_yaw) + (diff_y) * math.sin(previous_yaw)
-    #display_y = previous_y + -(diff_x) * math.sin(previous_yaw) + (diff_y) * math.cos(previous_yaw)
-
+    # Separator visualization
+    debug.rays.add(0,200,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
   }
 
 }
@@ -124,17 +104,6 @@ function communication() {
           .rid = rid
         }          
         is_there_a_new_other_robot_pose_ = 1
-
-        # Display loop closure
-        diff_x = value.x - pose.position.x
-        diff_y = value.y - pose.position.y
-        display_z = value.z - pose.position.z
-        rot_angle = pose.orientation.yaw
-        display_x = diff_x * math.cos(rot_angle) + diff_y * math.sin(rot_angle)
-        display_y = -diff_x * math.sin(rot_angle) + diff_y * math.cos(rot_angle)
-
-        # Separator visualization
-        debug.rays.add(0,200,0, display_x,display_y,display_z)
       }
     }
   )
