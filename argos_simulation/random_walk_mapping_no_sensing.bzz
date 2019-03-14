@@ -6,13 +6,13 @@ TRANS_SPEED = 1.0
 MAX_ROT_SPEED = 15
 ARENA_SIZE = 100.0
 ARENA_EDGE_TOLERANCE = 15.0
+LOOP_CLOSURE_RANGE = 20.0
 
 # Global variables
 var pose_id_ = 0
 var current_other_robot_ground_truth_pose_
 var is_there_a_new_other_robot_pose_ = 0
 var is_there_a_new_loop_closure_measurement_ = 0
-var last_poses
 # Calculates a random movement avoiding the outer walls
 function random_movement() {
   # Rotation
@@ -97,8 +97,10 @@ function communication() {
   # Listen to neighbor poses
   neighbors.listen("information_for_fake_loop_closure",
     function(vid, value, rid) {   
-      # To avoid version control, the robot with the lowest ID in the pair computes the loop closure  
-      if (id < rid) {
+      # To avoid version control, the robot with the lowest ID in the pair computes the loop closure
+      # Also, to avoid packet loss, we don't compute new loop closure when they are to close to disconnect. 
+      # Finally we need to avoid adding loop closures on the first node (0) because it would conflict with the prior (anchoring)
+      if (id < rid and neighbors.get(rid).distance/100 < LOOP_CLOSURE_RANGE and value.pose_id > 0) {
         current_other_robot_ground_truth_pose_ = {
           .value = value,
           .rid = rid
@@ -142,19 +144,10 @@ function init() {
   # Message flags initialization
   is_there_a_new_other_robot_pose_ = 0
   is_there_a_new_loop_closure_measurement_ = 0
-  # Global variable initialization
-  last_poses = {}
-  last_poses[0] = pose
-  last_poses[1] = pose
-  last_poses[2] = pose
 }
  
 # Executed every time step
 function step() {
-  # Update pose history
-  last_poses[2] = last_poses[1]
-  last_poses[1] = last_poses[0]
-  last_poses[0] = pose
   # Communication
   # Note that incoming messages (listen) are executed always first (after sensing), 
   # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"

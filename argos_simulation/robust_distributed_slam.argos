@@ -25,8 +25,8 @@
         <colored_blob_perspective_camera implementation="default" medium="leds" show_rays="true" />
         <positioning                     implementation="default"/>
       </sensors>
-      <params bytecode_file="random_walk_mapping.bo"
-              debug_file="random_walk_mapping.bdb" />
+      <params bytecode_file="random_walk_mapping_no_sensing.bo"
+              debug_file="random_walk_mapping_no_sensing.bdb" />
     </buzz_controller_quadmapper_no_sensing>
 
   </controllers>

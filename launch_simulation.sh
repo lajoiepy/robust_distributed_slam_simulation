@@ -18,7 +18,7 @@ cd ../../..
 
 # Compile Buzz script
 cd argos_simulation
-bzzc random_walk_mapping.bzz
+bzzc random_walk_mapping_no_sensing.bzz
 
 # Launch simulation
 argos3 -c robust_distributed_slam.argos
