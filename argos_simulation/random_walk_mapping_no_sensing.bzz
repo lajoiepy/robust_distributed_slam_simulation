@@ -6,13 +6,15 @@ TRANS_SPEED = 1.0
 MAX_ROT_SPEED = 15
 ARENA_SIZE = 100.0
 ARENA_EDGE_TOLERANCE = 15.0
-LOOP_CLOSURE_RANGE = 20.0
+LOOP_CLOSURE_RANGE = 15.0
+EXPERIMENT_LENGTH = 100
+MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 2
 
 # Global variables
 var pose_id_ = 0
-var current_other_robot_ground_truth_pose_
-var is_there_a_new_other_robot_pose_ = 0
-var is_there_a_new_loop_closure_measurement_ = 0
+var current_other_robot_ground_truth_poses_ = {}
+var current_number_of_other_robot_poses_ = 0
+var current_step_ = 0
 # Calculates a random movement avoiding the outer walls
 function random_movement() {
   # Rotation
@@ -66,20 +68,29 @@ function random_movement() {
 
 # Function to detect inter-robot loop closures and save them
 function loop_closure_detection() {
+  
+  number_of_loop_closures = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
 
+  current_loop_closure_measurements = {}
+  current_loop_closure_measurements.number = number_of_loop_closures
+  current_loop_closure_measurements.measurements = {}
   # Add fake loop closure on every rendez-vous
-  if (is_there_a_new_other_robot_pose_) {
-    # Add fake loop closure factor in the graph
-    compute_fake_rendezvous_loop_closures(current_other_robot_ground_truth_pose_.value.pose_id, current_other_robot_ground_truth_pose_.value.x, 
-                                      current_other_robot_ground_truth_pose_.value.y, current_other_robot_ground_truth_pose_.value.z, 
-                                      current_other_robot_ground_truth_pose_.value.yaw, current_other_robot_ground_truth_pose_.rid, pose_id_)
-    is_there_a_new_other_robot_pose_ = 0  
-    is_there_a_new_loop_closure_measurement_ = 1
+  for (i = 0, i < number_of_loop_closures, i = i + 1) {
+    current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
 
+    # Add fake loop closure factor in the graph
+    compute_fake_rendezvous_loop_closures(current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
+                                      current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
+                                      current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
+
+    current_loop_closure_measurements.measurements[i] = current_loop_closure_measurement
     # Separator visualization
     debug.rays.add(0,200,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
   }
+  current_number_of_other_robot_poses_ = 0
 
+  # Broadcast loop closure measurements
+  neighbors.broadcast("loop_closure_measurements", current_loop_closure_measurements)
 }
 
 # Function share information between robots.
@@ -98,31 +109,32 @@ function communication() {
   neighbors.listen("information_for_fake_loop_closure",
     function(vid, value, rid) {   
       # To avoid version control, the robot with the lowest ID in the pair computes the loop closure
-      # Also, to avoid packet loss, we don't compute new loop closure when they are to close to disconnect. 
-      # Finally we need to avoid adding loop closures on the first node (0) because it would conflict with the prior (anchoring)
-      if (id < rid and neighbors.get(rid).distance/100 < LOOP_CLOSURE_RANGE and value.pose_id > 0) {
-        current_other_robot_ground_truth_pose_ = {
+      # To avoid packet loss, we don't compute new loop closure when they are to close to disconnect. 
+      # We also need to avoid adding loop closures on the first node (0) because it would conflict with the prior (anchoring)
+      # Finally we stop adding loop closures once the experiment is done. 
+      if (id < rid and neighbors.get(rid).distance/100 < LOOP_CLOSURE_RANGE and value.pose_id > 0 and current_step_ < EXPERIMENT_LENGTH) {
+        current_other_robot_ground_truth_pose = {
           .value = value,
           .rid = rid
         }          
-        is_there_a_new_other_robot_pose_ = 1
+        current_other_robot_ground_truth_poses_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose
+        current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
       }
     }
   )
 
-  # Broadcast loop closure measurement
-  if (is_there_a_new_loop_closure_measurement_) {
-    neighbors.broadcast("loop_closure_measurement", current_loop_closure_measurement)
-    is_there_a_new_loop_closure_measurement_ = 0
-  }
-
   # Listen to neighbor poses
-  neighbors.listen("loop_closure_measurement",
+  neighbors.listen("loop_closure_measurements",
     function(vid, value, rid) {   
-      # Send information to controller to add loop closure to graph if it concern this robot
-      add_loop_closure_to_local_graph(value.robot_1_id, value.robot_2_id, value.robot_1_pose_id, 
-                                      value.robot_2_pose_id, value.x, value.y, value.z, 
-                                      value.q_x, value.q_y, value.q_z, value.q_w)
+      for (i = 0, i < value.number, i = i + 1) {
+        # Send information to controller to add loop closure to graph if it concern this robot
+        measurement = value.measurements[i]
+        if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
+          add_loop_closure_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
+                                          measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
+                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w)
+        }
+      }
     }
   )
 }
@@ -141,9 +153,6 @@ function init() {
   srand(id)
   # Take off command for the Spiri drone model
   takeoff()
-  # Message flags initialization
-  is_there_a_new_other_robot_pose_ = 0
-  is_there_a_new_loop_closure_measurement_ = 0
 }
  
 # Executed every time step
@@ -156,6 +165,8 @@ function step() {
   random_movement()
   # Loop closure detection
   loop_closure_detection()
+  # Increment number of steps
+  current_step_ = current_step_ + 1 
 }
  
 # Execute at exit
