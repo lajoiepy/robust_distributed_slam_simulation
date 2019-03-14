@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-    "*.argos":"xml",
-    "*.bzz":"python"
-    }
-}

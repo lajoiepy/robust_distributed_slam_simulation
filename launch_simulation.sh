@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Build Buzz
-mkdir buzz/build
-cd buzz/build
-cmake ../src
-sudo make install
-cd ../..
-
 # Build Buzz SLAM
 mkdir buzz_slam/build
 cd buzz_slam/build
