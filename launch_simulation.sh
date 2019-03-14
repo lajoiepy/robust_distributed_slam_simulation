@@ -7,6 +7,13 @@ cmake ../src
 sudo make install
 cd ../..
 
+# Build Buzz SLAM
+mkdir buzz_slam/build
+cd buzz_slam/build
+cmake ../src
+sudo make install
+cd ../..
+
 # Build Robust Distributed Mapper
 cd robust_distributed_mapper/cpp
 mkdir build
