@@ -79,13 +79,18 @@ function loop_closure_detection() {
     current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
 
     # Add fake loop closure factor in the graph
-    compute_fake_rendezvous_loop_closures(current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
+    is_outlier = compute_fake_rendezvous_loop_closures(
+                                      current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
                                       current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
                                       current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
 
     current_loop_closure_measurements.measurements[i] = current_loop_closure_measurement
     # Separator visualization
-    debug.rays.add(0,200,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
+    if (is_outlier == 1) {
+      debug.rays.add(200,0,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
+    } else {
+      debug.rays.add(0,200,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
+    }
   }
   current_number_of_other_robot_poses_ = 0
 
