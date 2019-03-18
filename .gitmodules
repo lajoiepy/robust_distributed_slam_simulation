@@ -1,6 +1,3 @@
-[submodule "robust_distributed_mapper"]
-	path = robust_distributed_mapper
-	url = https://github.com/lajoiepy/robust_distributed_mapper.git
 [submodule "buzz_slam"]
 	path = buzz_slam
 	url = https://github.com/lajoiepy/Buzz_SLAM.git
