@@ -8,7 +8,7 @@ sudo make install
 cd ../..
 
 # Build Robust Distributed Mapper
-cd robust_distributed_mapper/cpp
+cd buzz_slam/robust_distributed_mapper/cpp
 mkdir build
 cd build
 cmake ..
