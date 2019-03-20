@@ -3,7 +3,7 @@
 # Build Buzz SLAM
 mkdir buzz_slam/build
 cd buzz_slam/build
-cmake ../src
+cmake ../buzz
 sudo make install
 cd ../..
 
