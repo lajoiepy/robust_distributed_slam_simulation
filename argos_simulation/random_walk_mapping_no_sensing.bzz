@@ -63,7 +63,7 @@ function random_movement() {
   rotate(offset_yaw * math.pi / 180.0)
 
   # Translation command + add a fake noisy odometry measurement to the local graph
-  pose_id_ = move_forward_fake_odometry(TRANS_SPEED)
+  pose_id_ = move_forward_fake_odometry(TRANS_SPEED/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
 }
 
 # Function to detect inter-robot loop closures (separators) and save them
@@ -79,7 +79,7 @@ function separators_detection() {
     current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
 
     # Add fake separator factor in the graph
-    is_outlier = compute_fake_rendezvous_separators(
+    is_outlier = compute_fake_rendezvous_separator(
                                       current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
                                       current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
                                       current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
@@ -167,11 +167,11 @@ function step() {
   communication()
   # Move only at each SIMULATION_TIME_DIVIDER steps to allow time for communication.
   # In realtime, this should be less of an issue.
-  if (current_step_ % SIMULATION_TIME_DIVIDER) {
+  if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
     # Move
     random_movement()
     # Separator detection
-    separator_detection()
+    separators_detection()
   }
   # Increment number of steps
   current_step_ = current_step_ + 1 
