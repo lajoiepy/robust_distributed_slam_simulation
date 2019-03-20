@@ -71,6 +71,9 @@ RUN cd /home/docker/buzz &&\
     sudo make install &&\
     sudo ldconfig
 
+# Install some editing and debugging tools
+RUN sudo apt-get install -y gedit nano strace valgrind
+
 # Add dummy argument to force rebuild starting from that point
 ARG CODE_UPDATE=unknown
 
@@ -80,23 +83,25 @@ RUN git clone https://github.com/lajoiepy/robust_distributed_slam_simulation.git
     git checkout decentralization &&\
     git submodule update --init --recursive
 
-# Install some editing tools
-RUN sudo apt-get install -y gedit nano
-
 # Install Robust Distributed Mapper
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distributed_mapper/cpp &&\
     mkdir build &&\
     cd build &&\
-    sudo ln -sf eigen3/Eigen Eigen &&\
-    cmake ../ 
-    #&&\
-    #make &&\
-    #sudo make install
+    cmake ../ &&\
+    make &&\
+    sudo make install
 
 # Install Buzz SLAM
-#RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
-#    mkdir build &&\
-#    cd build &&\
-#    cmake ../src &&\
-#    make &&\
-#    sudo make install
+RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
+    mkdir build &&\
+    cd build &&\
+    cmake ../buzz &&\
+    make &&\
+    sudo make install
+
+# Compile buzz script
+RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
+    bzzc random_walk_mapping_no_sensing.bzz
+
+WORKDIR /home/docker/robust_distributed_slam_simulation/argos_simulation
+ENTRYPOINT argos3 -c robust_distributed_slam.argos
