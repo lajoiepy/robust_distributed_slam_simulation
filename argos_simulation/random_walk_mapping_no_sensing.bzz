@@ -6,9 +6,9 @@ TRANS_SPEED = 1.0
 MAX_ROT_SPEED = 15
 ARENA_SIZE = 100.0
 ARENA_EDGE_TOLERANCE = 15.0
-LOOP_CLOSURE_RANGE = 15.0
-EXPERIMENT_LENGTH = 100
+SEPARATOR_RANGE = 15.0
 MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 2
+SIMULATION_TIME_DIVIDER = 10
 
 # Global variables
 var pose_id_ = 0
@@ -66,41 +66,41 @@ function random_movement() {
   pose_id_ = move_forward_fake_odometry(TRANS_SPEED)
 }
 
-# Function to detect inter-robot loop closures and save them
-function loop_closure_detection() {
+# Function to detect inter-robot loop closures (separators) and save them
+function separators_detection() {
   
-  number_of_loop_closures = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
+  number_of_separators = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
 
-  current_loop_closure_measurements = {}
-  current_loop_closure_measurements.number = number_of_loop_closures
-  current_loop_closure_measurements.measurements = {}
-  # Add fake loop closure on every rendez-vous
-  for (i = 0, i < number_of_loop_closures, i = i + 1) {
+  current_separator_measurements = {}
+  current_separator_measurements.number = number_of_separators
+  current_separator_measurements.measurements = {}
+  # Add fake separator on every rendez-vous
+  for (i = 0, i < number_of_separators, i = i + 1) {
     current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
 
-    # Add fake loop closure factor in the graph
-    is_outlier = compute_fake_rendezvous_loop_closures(
+    # Add fake separator factor in the graph
+    is_outlier = compute_fake_rendezvous_separators(
                                       current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
                                       current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
                                       current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
 
-    current_loop_closure_measurements.measurements[i] = current_loop_closure_measurement
+    current_separator_measurements.measurements[i] = current_separator_measurement
     # Separator visualization
     if (is_outlier == 1) {
-      debug.rays.add(200,0,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
+      debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
     } else {
-      debug.rays.add(0,200,0, current_loop_closure_measurement.x,current_loop_closure_measurement.y,current_loop_closure_measurement.z)
+      debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
     }
   }
   current_number_of_other_robot_poses_ = 0
 
-  # Broadcast loop closure measurements
-  neighbors.broadcast("loop_closure_measurements", current_loop_closure_measurements)
+  # Broadcast separator measurements
+  neighbors.broadcast("separator_measurements", current_separator_measurements)
 }
 
 # Function share information between robots.
 function communication() {
-  # Broadcast ground truth pose to compute loop closure measurement
+  # Broadcast ground truth pose to compute separator measurement
   this_robot_ground_truth_pose = {
     .x = pose.position.x,
     .y = pose.position.y,
@@ -108,16 +108,15 @@ function communication() {
     .yaw = pose.orientation.yaw,
     .pose_id = pose_id_
   }
-  neighbors.broadcast("information_for_fake_loop_closure", this_robot_ground_truth_pose)
+  neighbors.broadcast("information_for_fake_separator", this_robot_ground_truth_pose)
 
   # Listen to neighbor poses
-  neighbors.listen("information_for_fake_loop_closure",
+  neighbors.listen("information_for_fake_separator",
     function(vid, value, rid) {   
-      # To avoid version control, the robot with the lowest ID in the pair computes the loop closure
-      # To avoid packet loss, we don't compute new loop closure when they are to close to disconnect. 
-      # We also need to avoid adding loop closures on the first node (0) because it would conflict with the prior (anchoring)
-      # Finally we stop adding loop closures once the experiment is done. 
-      if (id < rid and neighbors.get(rid).distance/100 < LOOP_CLOSURE_RANGE and value.pose_id > 0 and current_step_ < EXPERIMENT_LENGTH) {
+      # To avoid version control, the robot with the lowest ID in the pair computes the separator
+      # To avoid packet loss, we don't compute new separator when they are to close to disconnect. 
+      # We also need to avoid adding separator on the first node (0) because it would conflict with the prior (anchoring)
+      if (id < rid and neighbors.get(rid).distance/100 < SEPARATOR_RANGE and value.pose_id > 0) {
         current_other_robot_ground_truth_pose = {
           .value = value,
           .rid = rid
@@ -129,13 +128,13 @@ function communication() {
   )
 
   # Listen to neighbor poses
-  neighbors.listen("loop_closure_measurements",
+  neighbors.listen("separator_measurements",
     function(vid, value, rid) {   
       for (i = 0, i < value.number, i = i + 1) {
-        # Send information to controller to add loop closure to graph if it concern this robot
+        # Send information to controller to add separator to graph if it concern this robot
         measurement = value.measurements[i]
         if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
-          add_loop_closure_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
+          add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
                                           measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
                                           measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w)
         }
@@ -166,10 +165,14 @@ function step() {
   # Note that incoming messages (listen) are executed always first (after sensing), 
   # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
   communication()
-  # Move
-  random_movement()
-  # Loop closure detection
-  loop_closure_detection()
+  # Move only at each SIMULATION_TIME_DIVIDER steps to allow time for communication.
+  # In realtime, this should be less of an issue.
+  if (current_step_ % SIMULATION_TIME_DIVIDER) {
+    # Move
+    random_movement()
+    # Separator detection
+    separator_detection()
+  }
   # Increment number of steps
   current_step_ = current_step_ + 1 
 }
