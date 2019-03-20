@@ -14,7 +14,7 @@ cd build
 cmake ..
 make
 sudo make install
-cd ../../..
+cd ../../../..
 
 # Compile Buzz script
 cd argos_simulation
