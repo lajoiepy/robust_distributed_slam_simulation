@@ -73,6 +73,9 @@ RUN cd /home/docker/buzz &&\
 
 # Install some editing and debugging tools
 RUN sudo apt-get install -y gedit nano strace valgrind
+RUN sudo wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 &&\
+    sudo apt install -y ./vscode.deb &&\
+    sudo apt install -y libasound2
 
 # Add dummy argument to force rebuild starting from that point
 ARG CODE_UPDATE=unknown
@@ -104,4 +107,5 @@ RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
     bzzc random_walk_mapping_no_sensing.bzz
 
 WORKDIR /home/docker/robust_distributed_slam_simulation/argos_simulation
+# Entry point to start the simulation
 ENTRYPOINT argos3 -c robust_distributed_slam.argos
