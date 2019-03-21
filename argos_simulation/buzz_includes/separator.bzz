@@ -1,0 +1,34 @@
+# Function to detect inter-robot loop closures (separators) and save them, without sensing
+function separators_detection_no_sensing() {
+  
+  number_of_separators = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
+
+  current_separator_measurements = {}
+  current_separator_measurements.number = number_of_separators
+  current_separator_measurements.measurements = {}
+  # Add fake separator on every rendez-vous
+  for (i = 0, i < number_of_separators, i = i + 1) {
+    current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
+
+    # Add fake separator factor in the graph
+    is_outlier = compute_fake_rendezvous_separator(
+                                      current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
+                                      current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
+                                      current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
+
+    current_separator_measurements.measurements[i] = current_separator_measurement
+    # Separator visualization
+    log("ROBOT", id, ": RID", current_other_robot_ground_truth_pose.rid," pose_ids=", pose_id_, "-", current_other_robot_ground_truth_pose.value.pose_id)
+    if (SIMULATION_TIME_DIVIDER == 1) {
+      if (is_outlier == 1) {
+        debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
+      } else {
+        debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
+      }
+    }
+  }
+  current_number_of_other_robot_poses_ = 0
+
+  # Broadcast separator measurements
+  neighbors.broadcast("separator_measurements", current_separator_measurements)
+}

@@ -1,0 +1,5 @@
+# Global variables
+var pose_id_ = 0
+var current_other_robot_ground_truth_poses_ = {}
+var current_number_of_other_robot_poses_ = 0 
+var current_step_ = 0

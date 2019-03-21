@@ -1,174 +1,16 @@
-include "buzz_includes/vec2.bzz"
-include "buzz_includes/string.bzz"
- 
-# Constants
-TRANS_SPEED = 1.0
-MAX_ROT_SPEED = 15
-ARENA_SIZE = 100.0
-ARENA_EDGE_TOLERANCE = 15.0
-SEPARATOR_RANGE = 15.0
-MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 2
-SIMULATION_TIME_DIVIDER = 1
-
-# Global variables
-var pose_id_ = 0
-var current_other_robot_ground_truth_poses_ = {}
-var current_number_of_other_robot_poses_ = 0 
-var current_step_ = 0
-# Calculates a random movement avoiding the outer walls
-function random_movement() {
-  # Rotation
-  var cur_yaw = ((pose.orientation.yaw % (2. * math.pi)) / math.pi) * 180
-  var offset_yaw = rand_uniform(-MAX_ROT_SPEED, MAX_ROT_SPEED)
-  
-  # Avoid the walls
-  if (math.abs(math.abs(pose.position.x)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE) {
-    if (pose.position.x > 0){
-      if (cur_yaw < 90) {
-        offset_yaw = offset_yaw + MAX_ROT_SPEED
-      }
-      if (cur_yaw > 270) {
-        offset_yaw = offset_yaw - MAX_ROT_SPEED
-      }
-    }
-    if (pose.position.x < 0){
-      if (cur_yaw < 270 and cur_yaw > 180) {
-        offset_yaw = offset_yaw + MAX_ROT_SPEED
-      }
-      if (cur_yaw > 90 and cur_yaw < 180) {
-        offset_yaw = offset_yaw - MAX_ROT_SPEED
-      }
-    }  
-  }
-  if (math.abs(math.abs(pose.position.y)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE){
-    if (pose.position.y > 0){
-      if (cur_yaw < 180 and cur_yaw > 90) {
-        offset_yaw = offset_yaw + MAX_ROT_SPEED
-      }
-      if (cur_yaw < 90) {
-        offset_yaw = offset_yaw - MAX_ROT_SPEED
-      }
-    }
-    if (pose.position.y < 0){
-      if (cur_yaw < 360 and cur_yaw > 270) {
-        offset_yaw = offset_yaw + MAX_ROT_SPEED
-      }
-      if (cur_yaw < 270 and cur_yaw > 180) {
-        offset_yaw = offset_yaw - MAX_ROT_SPEED
-      }
-    }
-  }
-
-  # Rotation command
-  rotate(offset_yaw * math.pi / 180.0)
-
-  # Translation command + add a fake noisy odometry measurement to the local graph
-  pose_id_ = move_forward_fake_odometry(TRANS_SPEED/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
-}
-
-# Function to detect inter-robot loop closures (separators) and save them
-function separators_detection() {
-  
-  number_of_separators = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
-
-  current_separator_measurements = {}
-  current_separator_measurements.number = number_of_separators
-  current_separator_measurements.measurements = {}
-  # Add fake separator on every rendez-vous
-  for (i = 0, i < number_of_separators, i = i + 1) {
-    current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
-
-    # Add fake separator factor in the graph
-    is_outlier = compute_fake_rendezvous_separator(
-                                      current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
-                                      current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
-                                      current_other_robot_ground_truth_pose.value.yaw, current_other_robot_ground_truth_pose.rid, pose_id_)
-
-    current_separator_measurements.measurements[i] = current_separator_measurement
-    # Separator visualization
-    log("ROBOT", id, ": RID", current_other_robot_ground_truth_pose.rid," pose_ids=", pose_id_, "-", current_other_robot_ground_truth_pose.value.pose_id)
-    if (SIMULATION_TIME_DIVIDER == 1) {
-      if (is_outlier == 1) {
-        debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
-      } else {
-        debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
-      }
-    }
-  }
-  current_number_of_other_robot_poses_ = 0
-
-  # Broadcast separator measurements
-  neighbors.broadcast("separator_measurements", current_separator_measurements)
-}
-
-# Function share information between robots.
-function communication() {
-  # Broadcast ground truth pose to compute separator measurement only each SIMULATION_TIME_DIVIDER allow communication
-  if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
-    this_robot_ground_truth_pose = {
-      .x = pose.position.x,
-      .y = pose.position.y,
-      .z = pose.position.z,
-      .yaw = pose.orientation.yaw,
-      .pose_id = pose_id_
-    }
-    neighbors.broadcast("information_for_fake_separator", this_robot_ground_truth_pose)
-  }
-
-  # Listen to neighbor poses
-  neighbors.listen("information_for_fake_separator",
-    function(vid, value, rid) {   
-      # To avoid version control, the robot with the lowest ID in the pair computes the separator
-      # To avoid packet loss, we don't compute new separator when they are to close to disconnect. 
-      # We also need to avoid adding separator on the first node (0) because it would conflict with the prior (anchoring)
-      if (id < rid and neighbors.get(rid).distance/100 < SEPARATOR_RANGE and value.pose_id > 0) {
-        current_other_robot_ground_truth_pose = {
-          .value = value,
-          .rid = rid
-        }          
-        # Check if we already have an estimate for this robot, if so update it
-        other_robot_known = 0
-        for (i = 0, i < current_number_of_other_robot_poses_, i = i + 1) {
-          if (current_other_robot_ground_truth_poses_[i].rid == rid) {
-            current_other_robot_ground_truth_poses_[i] = current_other_robot_ground_truth_pose
-            other_robot_known = 1
-          }
-        }
-        # Otherwise add it
-        if (not other_robot_known) {
-          current_other_robot_ground_truth_poses_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose
-          current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
-        }
-      }
-    }
-  )
-
-  # Listen to neighbor poses
-  neighbors.listen("separator_measurements",
-    function(vid, value, rid) {   
-      for (i = 0, i < value.number, i = i + 1) {
-        # Send information to controller to add separator to graph if it concern this robot
-        measurement = value.measurements[i]
-        if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
-          add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
-                                          measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
-                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w)
-        }
-      }
-    }
-  )
-}
+include "buzz_includes/buzz_utils/vec2.bzz"
+include "buzz_includes/buzz_utils/string.bzz"
+include "buzz_includes/global_variables.bzz"
+include "buzz_includes/debug.bzz"
+include "buzz_includes/mapping_config.bzz"
+include "buzz_includes/movement.bzz"
+include "buzz_includes/communication.bzz"
+include "buzz_includes/separator.bzz"
 
 # Executed at init time
 function init() {
-  # Compute colors
-  var nr_robots = 10
-  var float_id = float(id)
-  var r = int((float_id/(nr_robots/2)) * 200)
-  var g = int(math.abs(float_id - (nr_robots/2))/(nr_robots/2) * 200)
-  var b = int(200 - float_id*(200/nr_robots))
   # Show trajectory for debugging
-  debug.trajectory.enable(10000, r, g, b)
+  show_colored_trajectory()
   # Initialization of random number generator. The controller function use time+id as the seed.
   srand(id)
   # Take off command for the Spiri drone model
@@ -180,13 +22,13 @@ function step() {
   # Register a new pose only at each SIMULATION_TIME_DIVIDER steps to allow time for communication.
   # In realtime, this should be less of an issue.
   # Move
-  random_movement()
+  random_movement_no_sensing()
   # Communication
   # Note that incoming messages (listen) are executed always first (after sensing), 
   # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
-  communication()
+  communication_no_sensing()
   # Separator detection
-  separators_detection()
+  separators_detection_no_sensing()
   # Increment number of steps
   current_step_ = current_step_ + 1 
 }
