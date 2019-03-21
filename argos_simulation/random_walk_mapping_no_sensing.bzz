@@ -8,12 +8,12 @@ ARENA_SIZE = 100.0
 ARENA_EDGE_TOLERANCE = 15.0
 SEPARATOR_RANGE = 15.0
 MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 2
-SIMULATION_TIME_DIVIDER = 10
+SIMULATION_TIME_DIVIDER = 1
 
 # Global variables
 var pose_id_ = 0
 var current_other_robot_ground_truth_poses_ = {}
-var current_number_of_other_robot_poses_ = 0
+var current_number_of_other_robot_poses_ = 0 
 var current_step_ = 0
 # Calculates a random movement avoiding the outer walls
 function random_movement() {
@@ -75,10 +75,12 @@ function separators_detection() {
   current_separator_measurements.number = number_of_separators
   current_separator_measurements.measurements = {}
   # Add fake separator on every rendez-vous
+  log("ROBOT", id, ": nb separators=", number_of_separators)
   for (i = 0, i < number_of_separators, i = i + 1) {
     current_other_robot_ground_truth_pose = current_other_robot_ground_truth_poses_[i]
 
     # Add fake separator factor in the graph
+    debug.print(current_other_robot_ground_truth_pose.value.pose_id, "  -  ", pose_id_)
     is_outlier = compute_fake_rendezvous_separator(
                                       current_other_robot_ground_truth_pose.value.pose_id, current_other_robot_ground_truth_pose.value.x, 
                                       current_other_robot_ground_truth_pose.value.y, current_other_robot_ground_truth_pose.value.z, 
@@ -121,8 +123,23 @@ function communication() {
           .value = value,
           .rid = rid
         }          
-        current_other_robot_ground_truth_poses_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose
-        current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
+	# Check if we already have an estimate for this robot, if so update it
+	other_robot_known = 0
+	log("listen_info ROBOT", id, ": rid=", rid)
+        for (i = 0, i < current_number_of_other_robot_poses_, i = i + 1) {
+	  if (current_other_robot_ground_truth_poses_[i].rid == rid) {
+	    current_other_robot_ground_truth_poses_[i] = current_other_robot_ground_truth_pose
+	    other_robot_known = 1
+	    log("ROBOT", id, ": ROBOT KNOWN rid=", rid)
+	  }
+	}
+	if (not other_robot_known) {
+	  # Otherwise add it
+	  log("ROBOT", id, ": ROBOT NOT KNOWN rid=", rid)
+	  current_other_robot_ground_truth_poses_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose
+          current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
+	}
+        log("ROBOT", id, ": number other=", current_number_of_other_robot_poses_)
       }
     }
   )
@@ -167,9 +184,10 @@ function step() {
   communication()
   # Move only at each SIMULATION_TIME_DIVIDER steps to allow time for communication.
   # In realtime, this should be less of an issue.
+  random_movement()
   if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
     # Move
-    random_movement()
+    # random_movement()
     # Separator detection
     separators_detection()
   }
