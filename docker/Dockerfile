@@ -108,4 +108,8 @@ RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
 
 WORKDIR /home/docker/robust_distributed_slam_simulation/argos_simulation
 # Entry point to start the simulation
-ENTRYPOINT argos3 -c robust_distributed_slam.argos
+# ENTRYPOINT argos3 -c robust_distributed_slam.argos
+
+# Put your own git credentials to edit the code
+git config --global user.email "lajoie.py@gmail.com"
+git config --global user.name "Pierre-Yves Lajoie"
