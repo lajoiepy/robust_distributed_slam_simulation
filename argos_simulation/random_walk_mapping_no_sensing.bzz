@@ -1,8 +1,8 @@
 include "buzz_includes/buzz_utils/vec2.bzz"
 include "buzz_includes/buzz_utils/string.bzz"
+include "buzz_includes/mapping_config.bzz"
 include "buzz_includes/global_variables.bzz"
 include "buzz_includes/debug.bzz"
-include "buzz_includes/mapping_config.bzz"
 include "buzz_includes/movement.bzz"
 include "buzz_includes/communication.bzz"
 include "buzz_includes/separator.bzz"
@@ -19,16 +19,30 @@ function init() {
  
 # Executed every time step
 function step() {
-  # Register a new pose only at each SIMULATION_TIME_DIVIDER steps to allow time for communication.
-  # In realtime, this should be less of an issue.
-  # Move
-  random_movement_no_sensing()
-  # Communication
-  # Note that incoming messages (listen) are executed always first (after sensing), 
-  # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
-  communication_no_sensing()
-  # Separator detection
-  separators_detection_no_sensing()
+  if (current_step_ == 0) {
+    # Init optimizer
+    init_optimizer(OPTIMIZER_PERIOD)
+  }
+  if (optimizer_state() == 0) {
+    # Set speeds
+    current_translation_speed = TRANS_SPEED
+    current_max_rotation_speed = MAX_ROT_SPEED
+    # Move
+    random_movement_no_sensing()
+    # Communication
+    # Note that incoming messages (listen) are executed always first (after sensing), 
+    # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
+    separators_detection_communication_no_sensing()
+    # Separator detection
+    separators_detection_no_sensing()
+  } else {
+    # Set speeds
+    current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
+    current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
+    # Move
+    random_movement_no_sensing()
+
+  }
   # Increment number of steps
   current_step_ = current_step_ + 1 
 }

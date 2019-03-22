@@ -1,5 +1,5 @@
 # Function share information between robots for separator detection without sensing.
-function communication_no_sensing() {
+function separators_detection_communication_no_sensing() {
   # Broadcast ground truth pose to compute separator measurement only each SIMULATION_TIME_DIVIDER allow communication
   if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
     this_robot_ground_truth_pose = {
