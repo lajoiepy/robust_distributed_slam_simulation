@@ -77,6 +77,9 @@ RUN sudo wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 &&\
     sudo apt install -y ./vscode.deb &&\
     sudo apt install -y libasound2
 
+# Settings for buzz editing
+RUN sudo echo "{ \"files.associations\": { \"*.bzz\":\"python\" } }" > ~/.config/Code/User/settings.json
+
 # Add dummy argument to force rebuild starting from that point
 ARG CODE_UPDATE=unknown
 
