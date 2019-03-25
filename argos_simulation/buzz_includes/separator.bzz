@@ -18,7 +18,6 @@ function separators_detection_no_sensing() {
 
     current_separator_measurements.measurements[i] = current_separator_measurement
     # Separator visualization
-    log("ROBOT", id, ": RID", current_other_robot_ground_truth_pose.rid," pose_ids=", pose_id_, "-", current_other_robot_ground_truth_pose.value.pose_id)
     if (SIMULATION_TIME_DIVIDER == 1) {
       if (is_outlier == 1) {
         debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)

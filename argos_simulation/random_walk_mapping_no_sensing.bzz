@@ -23,7 +23,7 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
-  if (optimizer_state() == 0) {
+  if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
     current_max_rotation_speed = MAX_ROT_SPEED
@@ -35,13 +35,22 @@ function step() {
     separators_detection_communication_no_sensing()
     # Separator detection
     separators_detection_no_sensing()
-  } else {
+  } else if (optimizer_state() == 1) {  # Start optimizing
+    # Add current neigbors
+    log("buzz robot ", id, " - look for neighbors")
+    neighbors.foreach( function(rid, data) { 
+        log("buzz robot ", id, " - neigbor ", rid)
+        add_neighbor_within_communication_range(rid)
+      }
+    )
     # Set speeds
     current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
     current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
     # Move
     random_movement_no_sensing()
-
+  } else { 
+    # Move
+    random_movement_no_sensing()
   }
   # Increment number of steps
   current_step_ = current_step_ + 1 
