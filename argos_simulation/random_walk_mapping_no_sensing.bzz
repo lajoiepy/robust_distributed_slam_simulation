@@ -39,8 +39,10 @@ function step() {
     # Add current neigbors
     log("buzz robot ", id, " - look for neighbors")
     neighbors.foreach( function(rid, data) { 
-        log("buzz robot ", id, " - neigbor ", rid)
-        add_neighbor_within_communication_range(rid)
+        if ( data.distance/100 < SEPARATOR_RANGE ) {
+          log("buzz robot ", id, " - neigbor ", rid)
+          add_neighbor_within_communication_range(rid)
+        }
       }
     )
     # Set speeds
