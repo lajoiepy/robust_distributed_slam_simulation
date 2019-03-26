@@ -1,0 +1,40 @@
+function start_optimization() {
+    # Add current neigbors
+    neighbors_in_separator_range = neighbors.filter(
+      function(rid, data) { 
+        return data.distance < 100 * SEPARATOR_RANGE # ARGoS simulation is in centimeters
+      }
+    )
+    neighbors_in_separator_range.foreach( function(rid, data) { # TODO: Maybe useless
+        add_neighbor_within_communication_range(rid)
+      }
+    )
+    # Set speeds
+    current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
+    current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
+}
+
+function send_rotation_estimates_to_neighbors() {
+    var current_neighbor
+    neighbors_in_separator_range.foreach( function(neighbor_in_range_id, neighbor_in_range_data) {
+        # Update rotation_estimates_to_send structure
+        compute_and_update_rotation_estimates_to_send(neighbor_in_range_id)
+        # Send the rotation estimates
+        communication_channel = string.concat("rotation_estimates_", string.tostring(id), "_to_", string.tostring(neighbor_in_range_id))
+        neighbors.broadcast(communication_channel, 1) # rotation_estimates_to_send
+      }
+    )
+}
+
+function receive_and_update_rotation_estimates_from_neighbors() {
+    neighbors_in_separator_range.foreach( function(neighbor_in_range_id, neighbor_in_range_data) {
+        # Receive the rotation estimates
+        communication_channel = string.concat("rotation_estimates_", string.tostring(neighbor_in_range_id), "_to_", string.tostring(id))
+        neighbors.listen(communication_channel, 
+            function(vid, value, rid) {   
+                update_neighbor_rotation_estimates()
+            }
+        )
+      }
+    )
+}

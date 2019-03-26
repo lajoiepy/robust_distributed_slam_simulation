@@ -17,6 +17,7 @@
 ## Distributed optimizer
 - Decentralize flagged initialization.
 - Decentralize optimization
+- Update factor in graph after optimization
 - Update Readme
 - Generate documentation
 - Update dockerfile

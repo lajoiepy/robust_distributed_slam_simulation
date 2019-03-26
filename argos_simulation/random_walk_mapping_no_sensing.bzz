@@ -6,6 +6,7 @@ include "buzz_includes/debug.bzz"
 include "buzz_includes/movement.bzz"
 include "buzz_includes/communication.bzz"
 include "buzz_includes/separator.bzz"
+include "buzz_includes/pose_graph_optimization.bzz"
 
 # Executed at init time
 function init() {
@@ -36,18 +37,14 @@ function step() {
     # Separator detection
     separators_detection_no_sensing()
   } else if (optimizer_state() == 1) {  # Start optimizing
-    # Add current neigbors
-    log("buzz robot ", id, " - look for neighbors")
-    neighbors.foreach( function(rid, data) { 
-        if ( data.distance/100 < SEPARATOR_RANGE ) {
-          log("buzz robot ", id, " - neigbor ", rid)
-          add_neighbor_within_communication_range(rid)
-        }
-      }
-    )
-    # Set speeds
-    current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
-    current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
+    start_optimization()
+    # Move
+    random_movement_no_sensing()
+  } else if (optimizer_state() == 2) {  # Rotation Estimation
+    # Send estimates to neighbors
+    send_rotation_estimates_to_neighbors()
+    # Receive estimates from neighbors
+    receive_and_update_rotation_estimates_from_neighbors()
     # Move
     random_movement_no_sensing()
   } else { 
