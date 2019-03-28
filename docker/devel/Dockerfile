@@ -66,19 +66,21 @@ RUN git clone https://github.com/MISTLab/Buzz.git /home/docker/buzz
 RUN cd /home/docker/buzz &&\
     mkdir build &&\
     cd build &&\
-    cmake ../src &&\
+    cmake -DCMAKE_BUILD_TYPE=Debug ../src &&\
     make &&\
     sudo make install &&\
     sudo ldconfig
 
-# Install some editing and debugging tools
+# Install and setup some editing and debugging tools
 RUN sudo apt-get install -y gedit nano strace valgrind
 RUN sudo wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 &&\
     sudo apt install -y ./vscode.deb &&\
     sudo apt install -y libasound2
 
+RUN code --install-extension ms-vscode.cpptools
+
 # Settings for buzz editing
-RUN mkdir ~/.config && mkdir ~/.config/Code && mkdir ~/.config/Code/User && touch ~/.config/Code/User/settings.json &&\
+RUN touch ~/.config/Code/User/settings.json &&\
     echo "{ \"files.associations\": { \"*.bzz\":\"python\" } }" > ~/.config/Code/User/settings.json
 
 # Add dummy argument to force rebuild starting from that point
@@ -94,7 +96,7 @@ RUN git clone https://github.com/lajoiepy/robust_distributed_slam_simulation.git
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distributed_mapper/cpp &&\
     mkdir build &&\
     cd build &&\
-    cmake ../ &&\
+    cmake -DCMAKE_BUILD_TYPE=Debug ../ &&\
     make &&\
     sudo make install
 
@@ -102,7 +104,7 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distribu
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
     mkdir build &&\
     cd build &&\
-    cmake ../buzz &&\
+    cmake -DCMAKE_BUILD_TYPE=Debug ../buzz &&\
     make &&\
     sudo make install
 
@@ -110,10 +112,15 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
 RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
     bzzc random_walk_mapping_no_sensing.bzz
 
-WORKDIR /home/docker/robust_distributed_slam_simulation/argos_simulation
-# Entry point to start the simulation
-# ENTRYPOINT argos3 -c robust_distributed_slam.argos
+# Setup debug config for visual studio code
+RUN mkdir ~/robust_distributed_slam_simulation/.vscode && touch ~/robust_distributed_slam_simulation/.vscode/launch.json &&\
+    echo "{\"version\": \"0.2.0\",\"configurations\": [{\"name\": \"(gdb) Attach\", \"type\": \"cppdbg\", \"request\": \"attach\", \"program\" : \"/usr/bin/argos3\", \"processId\": \"\${command:pickProcess}\", \"MIMode\": \"gdb\", \"setupCommands\": [ {\"description\": \"Enable pretty-printing for gdb\", \"text\": \"-enable-pretty-printing\",\"ignoreFailures\": true}]}]}" \
+    > ~/robust_distributed_slam_simulation/.vscode/launch.json
 
-# Put your own git credentials to edit the code
+# Put your own git credentials to commit edited code
 RUN git config --global user.email "lajoie.py@gmail.com" &&\
     git config --global user.name "Pierre-Yves Lajoie"
+
+# Entry point to start the simulation
+WORKDIR /home/docker/robust_distributed_slam_simulation/argos_simulation
+# ENTRYPOINT argos3 -c robust_distributed_slam.argos
