@@ -40,3 +40,30 @@ function receive_and_update_rotation_estimates_from_neighbors() {
         }
     )
 }
+
+function send_pose_estimates_to_neighbors() {
+    pose_estimates_table = {}
+    number_of_estimates_to_send = 0
+    neighbors_in_separator_range.foreach( function(neighbor_in_range_id, neighbor_in_range_data) {
+        # Update pose_estimates_to_send structure
+        compute_and_update_pose_estimates_to_send(neighbor_in_range_id)
+        if (size(pose_estimates_to_send) > 0){
+            pose_estimates_table[number_of_estimates_to_send] = pose_estimates_to_send
+            number_of_estimates_to_send = number_of_estimates_to_send + 1
+        }
+      }
+    )
+    if (size(pose_estimates_table) > 0){
+        # Send the pose estimates
+        neighbors.broadcast("pose_estimates", pose_estimates_table)
+    }
+}
+
+function receive_and_update_pose_estimates_from_neighbors() {
+    neighbors.listen("pose_estimates", 
+        function(vid, value, rid) {      
+            update_neighbor_pose_estimates(value)
+            estimate_pose_and_update_pose()
+        }
+    )
+}

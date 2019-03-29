@@ -24,7 +24,6 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
-  log("Robot ", id, " : optimizer_state=", optimizer_state())
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
@@ -48,7 +47,14 @@ function step() {
     receive_and_update_rotation_estimates_from_neighbors()
     # Move
     random_movement_no_sensing()
-  } else { 
+  } else if (optimizer_state() == 3) {  # PoseEstimation
+    # Send estimates to neighbors
+    send_pose_estimates_to_neighbors()
+    # Receive estimates from neighbors
+    receive_and_update_pose_estimates_from_neighbors()
+    # Move
+    random_movement_no_sensing()
+  } else {
     # Move
     random_movement_no_sensing()
   }
