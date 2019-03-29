@@ -15,7 +15,7 @@
 - Find a clean way to share images between robots (maybe share message with the ROS channel to listen to).
 
 ## Distributed optimizer
-- Decentralize flagged initialization.
+- Implement and decentralize flagged initialization.
 - Decentralize optimization
 - Update factor in graph after optimization
 - Update Readme
@@ -25,6 +25,7 @@
 - Code and incremental version of distributed_mapper::loadSubgraphAndCreateSubgraphEdge
 - Fix licenses
 - Add flagged initialization
+- Add a control barrier at the end of the optimization before restart movements
 
 ## Docker
 - Find how to use the xserver without using the `--privileged` option. 

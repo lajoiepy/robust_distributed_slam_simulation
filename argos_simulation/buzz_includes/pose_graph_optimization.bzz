@@ -36,7 +36,7 @@ function receive_and_update_rotation_estimates_from_neighbors() {
     neighbors.listen("rotation_estimates", 
         function(vid, value, rid) {      
             update_neighbor_rotation_estimates(value)
-            # estimate_rotation_and_update_rotation()
+            estimate_rotation_and_update_rotation()
         }
     )
 }
