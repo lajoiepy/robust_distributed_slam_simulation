@@ -34,35 +34,35 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="100, 250, 4" center="0,0,2">
+  <arena size="20, 20, 4" center="0,0,2">
 
-    <box id="wall_n" size="100, .1, 4" movable="false">
-      <body position="0, 50, 0" orientation="0, 0, 0" />
+    <box id="wall_n" size="20, .1, 4" movable="false">
+      <body position="0, 10, 0" orientation="0, 0, 0" />
       <leds medium="leds">
         <led offset="0, -.1, 2.1" anchor="origin" color="red" />
       </leds>
     </box>
 
-    <box id="wall_s" size="100, .1, 4" movable="false">
-      <body position="0, -50, 0" orientation="0, 0, 0" />
+    <box id="wall_s" size="20, .1, 4" movable="false">
+      <body position="0, -10, 0" orientation="0, 0, 0" />
       <leds medium="leds">
         <led offset="0, .1, 2.1" anchor="origin" color="blue" />
       </leds>
     </box>
 
-    <box id="wall_w" size=".1, 100, 4" movable="false">
-      <body position="50, 0, 0" orientation="0, 0, 0" />
+    <box id="wall_w" size=".1, 20, 4" movable="false">
+      <body position="10, 0, 0" orientation="0, 0, 0" />
     </box>
 
-    <box id="wall_e" size=".1, 100, 4" movable="false">
-      <body position="-50, 0, 0" orientation="0, 0, 0" />
+    <box id="wall_e" size=".1, 20, 4" movable="false">
+      <body position="-10, 0, 0" orientation="0, 0, 0" />
     </box>
 
     <distribute>
-      <position method="uniform" min="-20,-20,0" max="20,20,0" />
+      <position method="uniform" min="-3,-3,0" max="3,3,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
-      <entity quantity="10" max_trials="100">
-        <spiri id="sp" rab_range="20" rab_data_size="100000" camera_range="5">
+      <entity quantity="2" max_trials="100">
+        <spiri id="sp" rab_range="100" rab_data_size="100000" camera_range="5">
           <controller config="bcs" />
         </spiri>
       </entity>
@@ -92,7 +92,8 @@
   <visualization>
     <qt-opengl>
       <camera>
-        <placement idx="0" position="-0.183538,-0.271409,80.035" look_at="-0.183458,-0.25141,10.0352" lens_focal_length="20" />
+        <placement idx="0" position="-0.183538,-0.271409,20.035" look_at="-0.183458,-0.25141,10.0352" lens_focal_length="20" />
+        <placement idx="4" position="-0.183538,-0.271409,80.035" look_at="-0.183458,-0.25141,10.0352" lens_focal_length="20" />
         <placement idx="1" position="-0.318019,-2.69064,2.50564" look_at="-0.290502,-1.79742,2.05687" lens_focal_length="20" />
         <placement idx="2" position="-1.73201,5.67127,3.87881" look_at="-1.20933,5.17449,3.18598" lens_focal_length="20" />
         <placement idx="3" position="1.71878,-1.5331,4.94721" look_at="1.17773,-1.81368,4.1544" lens_focal_length="20" />

@@ -24,6 +24,7 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
+  log("Robot ", id, ": State= ", optimizer_state())
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
