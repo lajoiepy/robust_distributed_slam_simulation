@@ -35,7 +35,7 @@ argos3 -c robust_distributed_slam.argos
 # To debug with Visual Studio Code
 Some editing and debugging tools are installed in the image for development purposes (gedit, nano, strace, valgrind, and Visual Studio Code).
 To debug the code from this repository:
-1. Open Visual Studio Code in the folder `/home/docker/robust_distributed_slam_simulation`.
+1. Open Visual Studio Code in the folder `/home/docker/robust_distributed_slam_simulation` with the `--user-data-dir /home/docker/code/` argument.
 2. Launch the simulation as explained previously.
 3. Start the `(gdb) Attach` configuration in the Visual Studio Code debugging tool and select the running `argos3` process.
 4. You are ready to place your breakpoints and debug!

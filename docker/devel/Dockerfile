@@ -27,7 +27,7 @@ RUN git clone https://bitbucket.org/gtborg/gtsam && \
     mkdir build && \
     cd build && \
     cmake .. && \
-    make -j8 && \
+    make -j2 && \
     make install
 
 # Install Eigen3 (packaged in GTSAM)
@@ -60,6 +60,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER docker
 RUN sudo dpkg -i argos3-package.deb
 RUN sudo chmod -R ugo+rw /home/docker
+USER root
 
 # Install Buzz
 RUN git clone https://github.com/MISTLab/Buzz.git /home/docker/buzz
@@ -68,20 +69,22 @@ RUN cd /home/docker/buzz &&\
     cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Debug ../src &&\
     make &&\
-    sudo make install &&\
-    sudo ldconfig
+    make install &&\
+    ldconfig
 
 # Install and setup some editing and debugging tools
 RUN sudo apt-get install -y gedit nano strace valgrind
+
 RUN sudo wget -O vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 &&\
     sudo apt install -y ./vscode.deb &&\
     sudo apt install -y libasound2
 
-RUN code --install-extension ms-vscode.cpptools
+RUN mkdir /home/docker/code &&\
+    code --install-extension ms-vscode.cpptools --user-data-dir /home/docker/code
 
 # Settings for buzz editing
-RUN touch ~/.config/Code/User/settings.json &&\
-    echo "{ \"files.associations\": { \"*.bzz\":\"python\" } }" > ~/.config/Code/User/settings.json
+RUN touch /home/docker/code/User/settings.json &&\
+    echo "{ \"files.associations\": { \"*.bzz\":\"python\" } }" > /home/docker/code/User/settings.json
 
 # Add dummy argument to force rebuild starting from that point
 ARG CODE_UPDATE=unknown
@@ -98,7 +101,7 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distribu
     cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Debug ../ &&\
     make &&\
-    sudo make install
+    make install
 
 # Install Buzz SLAM
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
@@ -106,16 +109,16 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
     cd build &&\
     cmake -DCMAKE_BUILD_TYPE=Debug ../buzz &&\
     make &&\
-    sudo make install
+    make install
 
 # Compile buzz script
 RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
     bzzc random_walk_mapping_no_sensing.bzz
 
 # Setup debug config for visual studio code
-RUN mkdir ~/robust_distributed_slam_simulation/.vscode && touch ~/robust_distributed_slam_simulation/.vscode/launch.json &&\
+RUN mkdir /home/docker/robust_distributed_slam_simulation/.vscode && touch /home/docker/robust_distributed_slam_simulation/.vscode/launch.json &&\
     echo "{\"version\": \"0.2.0\",\"configurations\": [{\"name\": \"(gdb) Attach\", \"type\": \"cppdbg\", \"request\": \"attach\", \"program\" : \"/usr/bin/argos3\", \"processId\": \"\${command:pickProcess}\", \"MIMode\": \"gdb\", \"setupCommands\": [ {\"description\": \"Enable pretty-printing for gdb\", \"text\": \"-enable-pretty-printing\",\"ignoreFailures\": true}]}]}" \
-    > ~/robust_distributed_slam_simulation/.vscode/launch.json
+    > /home/docker/robust_distributed_slam_simulation/.vscode/launch.json
 
 # Put your own git credentials to commit edited code
 RUN git config --global user.email "lajoie.py@gmail.com" &&\
