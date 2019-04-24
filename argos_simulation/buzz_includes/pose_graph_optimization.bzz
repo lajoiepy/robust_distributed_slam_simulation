@@ -5,7 +5,7 @@ function start_optimization() {
         return data.distance < 100 * SEPARATOR_RANGE # ARGoS simulation is in centimeters
       }
     )
-    neighbors_in_separator_range.foreach( function(rid, data) { # TODO: Maybe useless
+    neighbors_in_separator_range.foreach( function(rid, data) {
         add_neighbor_within_communication_range(rid)
       }
     )
@@ -64,6 +64,34 @@ function receive_and_update_pose_estimates_from_neighbors() {
         function(vid, value, rid) {      
             update_neighbor_pose_estimates(value)
             estimate_pose_and_update_pose()
+        }
+    )
+}
+
+function send_rotation_estimation_finished_flag_to_neighbors() {
+    if (rotation_estimation_stopping_conditions()) {
+        neighbors.broadcast("rotation_estimation_is_finished", 1)
+    }
+}
+
+function receive_rotation_estimation_finished_flag_from_neighbors() {
+    neighbors.listen("rotation_estimation_is_finished", 
+        function(vid, value, rid) {      
+            neighbor_rotation_estimation_is_finished(rid)
+        }
+    )
+}
+
+function send_pose_estimation_finished_flag_to_neighbors() {
+    if (pose_estimation_stopping_conditions()) {
+        neighbors.broadcast("pose_estimation_is_finished", 1)
+    }
+}
+
+function receive_pose_estimation_finished_flag_from_neighbors() {
+    neighbors.listen("pose_estimation_is_finished", 
+        function(vid, value, rid) {      
+            neighbor_pose_estimation_is_finished(rid)
         }
     )
 }

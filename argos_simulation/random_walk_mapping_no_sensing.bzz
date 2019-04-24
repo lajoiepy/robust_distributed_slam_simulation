@@ -42,17 +42,25 @@ function step() {
     # Move
     random_movement_no_sensing()
   } else if (optimizer_state() == 2) {  # Rotation Estimation
+    # Receive finished flags from other robots
+    receive_rotation_estimation_finished_flag_from_neighbors()
     # Send estimates to neighbors
     send_rotation_estimates_to_neighbors()
     # Receive estimates from neighbors
     receive_and_update_rotation_estimates_from_neighbors()
+    # Send finished flag if stopping conditions are met
+    send_rotation_estimation_finished_flag_to_neighbors()
     # Move
     random_movement_no_sensing()
   } else if (optimizer_state() == 3) {  # PoseEstimation
+    # Receive finished flags from other robots
+    receive_pose_estimation_finished_flag_from_neighbors()
     # Send estimates to neighbors
     send_pose_estimates_to_neighbors()
     # Receive estimates from neighbors
     receive_and_update_pose_estimates_from_neighbors()
+    # Send finished flag if stopping conditions are met
+    send_pose_estimation_finished_flag_to_neighbors()
     # Move
     random_movement_no_sensing()
   } else {
