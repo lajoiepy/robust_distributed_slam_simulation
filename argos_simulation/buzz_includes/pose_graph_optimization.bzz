@@ -34,11 +34,9 @@ function send_rotation_estimates_to_neighbors() {
 
 function receive_and_update_rotation_estimates_from_neighbors() {
     neighbors.listen("rotation_estimates", 
-        function(vid, value, rid) {      
+        function(vid, value, rid) {     
             update_neighbor_rotation_estimates(value)
-            if (is_allowed_to_estimate()) {
-                estimate_rotation_and_update_rotation()
-            }
+            estimate_rotation_and_update_rotation()
         }
     )
 }
@@ -55,7 +53,7 @@ function send_pose_estimates_to_neighbors() {
         }
       }
     )
-    if (size(pose_estimates_table) > 0){
+    if (size(pose_estimates_table) > 0 and optimizer_phase() == 0){
         # Send the pose estimates
         neighbors.broadcast("pose_estimates", pose_estimates_table)
     }
@@ -65,7 +63,8 @@ function receive_and_update_pose_estimates_from_neighbors() {
     neighbors.listen("pose_estimates", 
         function(vid, value, rid) {      
             update_neighbor_pose_estimates(value)
-            if (is_allowed_to_estimate()) {
+            log("Robot ", id, " Phase ", optimizer_phase())
+            if (optimizer_phase() == 1) {
                 estimate_pose_and_update_pose()
             }
         }

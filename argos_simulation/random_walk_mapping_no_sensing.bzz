@@ -24,7 +24,6 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
-  log("Robot ", id, ": State= ", optimizer_state())
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
@@ -52,7 +51,7 @@ function step() {
     send_rotation_estimation_finished_flag_to_neighbors()
     # Move
     random_movement_no_sensing()
-  } else if (optimizer_state() == 3) {  # PoseEstimation
+  } else if (optimizer_state() == 4) {  # PoseEstimation
     # Receive finished flags from other robots
     receive_pose_estimation_finished_flag_from_neighbors()
     # Send estimates to neighbors
