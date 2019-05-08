@@ -35,7 +35,9 @@ function step() {
     # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
     separators_detection_communication_no_sensing()
     # Separator detection
-    separators_detection_no_sensing()
+    if (current_step_ % SEPARATOR_DETECTION_PERIOD == 0) {
+      separators_detection_no_sensing()
+    }
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
     # Move
