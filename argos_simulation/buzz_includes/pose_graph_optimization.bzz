@@ -26,7 +26,7 @@ function send_rotation_estimates_to_neighbors() {
         }
       }
     )
-    if (size(rotation_estimates_table) > 0){
+    if (size(rotation_estimates_table) > 0 and optimizer_phase() == 0){
         # Send the rotation estimates
         neighbors.broadcast("rotation_estimates", rotation_estimates_table)
     }
@@ -36,7 +36,9 @@ function receive_and_update_rotation_estimates_from_neighbors() {
     neighbors.listen("rotation_estimates", 
         function(vid, value, rid) {     
             update_neighbor_rotation_estimates(value)
-            estimate_rotation_and_update_rotation()
+            if (optimizer_phase() == 1) {
+                estimate_rotation_and_update_rotation()
+            }
         }
     )
 }
@@ -63,7 +65,6 @@ function receive_and_update_pose_estimates_from_neighbors() {
     neighbors.listen("pose_estimates", 
         function(vid, value, rid) {      
             update_neighbor_pose_estimates(value)
-            log("Robot ", id, " Phase ", optimizer_phase())
             if (optimizer_phase() == 1) {
                 estimate_pose_and_update_pose()
             }
