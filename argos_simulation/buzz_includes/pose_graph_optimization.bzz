@@ -36,6 +36,8 @@ function receive_and_update_rotation_estimates_from_neighbors() {
     neighbors.listen("rotation_estimates", 
         function(vid, value, rid) {     
             update_neighbor_rotation_estimates(value)
+            # Check and reset flags if needed
+            check_if_all_estimation_done_and_reset()
             if (optimizer_phase() == 1) {
                 estimate_rotation_and_update_rotation()
             }
@@ -65,6 +67,8 @@ function receive_and_update_pose_estimates_from_neighbors() {
     neighbors.listen("pose_estimates", 
         function(vid, value, rid) {      
             update_neighbor_pose_estimates(value)
+            # Check and reset flags if needed
+            check_if_all_estimation_done_and_reset()
             if (optimizer_phase() == 1) {
                 estimate_pose_and_update_pose()
             }

@@ -8,11 +8,14 @@ TRANSLATION_ESTIMATE_CHANGE_THRESHOLD=0.1
 USE_FLAGGED_INITIALIZATION=1
 # Simulation specific parameters
 IS_SIMULATION=1
-NUMBER_OF_ROBOTS=2
+NUMBER_OF_ROBOTS=3
 ERROR_FILE_NAME="log/datasets/errors.csv"
+# Debug parameters
+DEBUG=1
 
 function load_cpp_controller_parameters() {
-    load_parameters(ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
+    load_parameters(DEBUG,
+                    ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
                     ROTATION_ESTIMATE_CHANGE_THRESHOLD,
                     TRANSLATION_ESTIMATE_CHANGE_THRESHOLD,
                     USE_FLAGGED_INITIALIZATION,
