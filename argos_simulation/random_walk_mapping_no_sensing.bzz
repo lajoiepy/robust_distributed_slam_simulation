@@ -29,6 +29,8 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
+  receive_optimizer_state_from_neighbors()
+  send_optimizer_state_to_neighbors()
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED

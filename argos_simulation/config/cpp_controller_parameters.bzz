@@ -6,15 +6,18 @@ ROTATION_ESTIMATE_CHANGE_THRESHOLD=0.1
 TRANSLATION_ESTIMATE_CHANGE_THRESHOLD=0.1
 # To reduce the number of iteration (bool)
 USE_FLAGGED_INITIALIZATION=1
+# Reuse previous result as intialization
+INCREMENTAL_SOLVING=0
 # Simulation specific parameters
 IS_SIMULATION=1
-NUMBER_OF_ROBOTS=3
+NUMBER_OF_ROBOTS=2
 ERROR_FILE_NAME="log/datasets/errors.csv"
 # Debug parameters
 DEBUG=1
 
 function load_cpp_controller_parameters() {
-    load_parameters(DEBUG,
+    load_parameters(INCREMENTAL_SOLVING,
+                    DEBUG,
                     ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
                     ROTATION_ESTIMATE_CHANGE_THRESHOLD,
                     TRANSLATION_ESTIMATE_CHANGE_THRESHOLD,

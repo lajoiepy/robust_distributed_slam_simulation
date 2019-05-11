@@ -103,3 +103,15 @@ function receive_pose_estimation_finished_flag_from_neighbors() {
         }
     )
 }
+
+function send_optimizer_state_to_neighbors() {
+    neighbors.broadcast("optimizer_state", optimizer_state())
+}
+
+function receive_optimizer_state_from_neighbors() {
+    neighbors.listen("optimizer_state", 
+        function(vid, value, rid) {      
+            neighbor_state(rid, value)
+        }
+    )
+}
