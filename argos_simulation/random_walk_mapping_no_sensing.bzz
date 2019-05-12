@@ -35,6 +35,9 @@ function step() {
     # Set speeds
     current_translation_speed = TRANS_SPEED
     current_max_rotation_speed = MAX_ROT_SPEED
+    # Reset flags
+    has_received_rotation_estimates = 0
+    has_received_pose_estimates = 0
     # Move
     random_movement_no_sensing()
     # Communication
@@ -52,10 +55,10 @@ function step() {
   } else if (optimizer_state() == 2) {  # Rotation Estimation
     # Receive finished flags from other robots
     receive_rotation_estimation_finished_flag_from_neighbors()
-    # Send estimates to neighbors
-    send_rotation_estimates_to_neighbors()
     # Receive estimates from neighbors
     receive_and_update_rotation_estimates_from_neighbors()
+    # Send estimates to neighbors
+    send_rotation_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
     send_rotation_estimation_finished_flag_to_neighbors()
     # Move
@@ -63,10 +66,10 @@ function step() {
   } else if (optimizer_state() == 4) {  # PoseEstimation
     # Receive finished flags from other robots
     receive_pose_estimation_finished_flag_from_neighbors()
-    # Send estimates to neighbors
-    send_pose_estimates_to_neighbors()
     # Receive estimates from neighbors
     receive_and_update_pose_estimates_from_neighbors()
+    # Send estimates to neighbors
+    send_pose_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
     send_pose_estimation_finished_flag_to_neighbors()
     # Move

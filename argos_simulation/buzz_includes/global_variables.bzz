@@ -6,3 +6,5 @@ var current_step_ = 0
 var current_translation_speed = TRANS_SPEED
 var current_max_rotation_speed = MAX_ROT_SPEED
 var neighbors_in_separator_range = {}
+var has_received_rotation_estimates = 0
+var has_received_pose_estimates = 0

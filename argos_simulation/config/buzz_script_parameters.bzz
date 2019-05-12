@@ -12,9 +12,9 @@ MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 10
 # Slows down the simulation if > 1
 SIMULATION_TIME_DIVIDER = 1
 # To control the number of fake separator detected
-SEPARATOR_DETECTION_PERIOD = 5
+SEPARATOR_DETECTION_PERIOD = 25
 # To control the period between optimizations. (e.g., if 100, robots will wait 100 steps before to start optimizing)
-OPTIMIZER_PERIOD = 20
+OPTIMIZER_PERIOD = 100
 # During optimization we want to slow down the robots so they stay in communication range during the process
 SLOW_ROTATION_DURING_OPTIMIZATION = 1
 SLOW_TRANSLATION_DURING_OPTIMIZATION = 0.0001

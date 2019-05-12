@@ -10,7 +10,7 @@ USE_FLAGGED_INITIALIZATION=1
 INCREMENTAL_SOLVING=0
 # Simulation specific parameters
 IS_SIMULATION=1
-NUMBER_OF_ROBOTS=2
+NUMBER_OF_ROBOTS=3
 ERROR_FILE_NAME="log/datasets/errors.csv"
 # Debug parameters
 DEBUG=1
