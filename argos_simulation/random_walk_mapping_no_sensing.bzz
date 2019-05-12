@@ -45,8 +45,13 @@ function step() {
     # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
     separators_detection_communication_no_sensing()
     # Separator detection
-    if (current_step_ % SEPARATOR_DETECTION_PERIOD == 0) {
+    random_number = rand_uniform(0, SEPARATOR_DETECTION_PERIOD)
+    if ((not has_sent_separator) and random_number > math.abs(current_step_ % (SEPARATOR_DETECTION_PERIOD) - SEPARATOR_DETECTION_PERIOD) ) {
       separators_detection_no_sensing()
+      has_sent_separator = 1
+    }
+    if (current_step_ % SEPARATOR_DETECTION_PERIOD == 0) {
+      has_sent_separator = 0
     }
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
