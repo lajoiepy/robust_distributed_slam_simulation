@@ -6,7 +6,7 @@ ARENA_SIZE = 10.0
 # Tolerance for the collision avoidance with the walls
 ARENA_EDGE_TOLERANCE = 2.0
 # Maximum range for separator detection
-SEPARATOR_RANGE = 100.0
+SEPARATOR_RANGE = 1000.0
 # To control the messages size
 MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 10
 # Slows down the simulation if > 1

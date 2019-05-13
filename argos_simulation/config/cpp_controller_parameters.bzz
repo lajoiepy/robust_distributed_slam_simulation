@@ -3,11 +3,11 @@ ROTATION_NOISE_STD=0.01
 TRANSLATION_NOISE_STD=0.1
 # Threshold for stopping condition in optimization
 ROTATION_ESTIMATE_CHANGE_THRESHOLD=0.1
-TRANSLATION_ESTIMATE_CHANGE_THRESHOLD=0.1
+POSE_ESTIMATE_CHANGE_THRESHOLD=0.5
 # To reduce the number of iteration (bool)
 USE_FLAGGED_INITIALIZATION=1
 # Reuse previous result as intialization
-INCREMENTAL_SOLVING=0
+INCREMENTAL_SOLVING=1
 # Simulation specific parameters
 IS_SIMULATION=1
 NUMBER_OF_ROBOTS=3
@@ -20,7 +20,7 @@ function load_cpp_controller_parameters() {
                     DEBUG,
                     ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
                     ROTATION_ESTIMATE_CHANGE_THRESHOLD,
-                    TRANSLATION_ESTIMATE_CHANGE_THRESHOLD,
+                    POSE_ESTIMATE_CHANGE_THRESHOLD,
                     USE_FLAGGED_INITIALIZATION,
                     IS_SIMULATION, NUMBER_OF_ROBOTS,
                     ERROR_FILE_NAME)
