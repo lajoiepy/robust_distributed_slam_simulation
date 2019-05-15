@@ -9,6 +9,7 @@ USE_FLAGGED_INITIALIZATION=1
 # Reuse previous result as intialization
 INCREMENTAL_SOLVING=0
 # Pairwise Consistency Maximization parameters
+USE_PCM = 0
 CONSISTENCY_THRESHOLD = 0.95
 # Simulation specific parameters
 IS_SIMULATION=1
@@ -18,7 +19,8 @@ ERROR_FILE_NAME="log/datasets/errors.csv"
 DEBUG=1
 
 function load_cpp_controller_parameters() {
-    load_parameters(CONSISTENCY_THRESHOLD,
+    load_parameters(USE_PCM,
+                    CONSISTENCY_THRESHOLD,
                     INCREMENTAL_SOLVING,
                     DEBUG,
                     ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
