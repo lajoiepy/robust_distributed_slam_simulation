@@ -8,7 +8,11 @@
     <system threads="0" />
     <experiment length="0"
                 ticks_per_second="10" />
+    <profiling file="profile.txt"
+             format="human_readable"
+             truncate_file="true" />
   </framework>
+  
 
   <!-- *************** -->
   <!-- * Controllers * -->
@@ -62,7 +66,7 @@
       <position method="uniform" min="-3,-3,0" max="3,3,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
       <entity quantity="2" max_trials="100">
-        <spiri id="sp" rab_range="100" rab_data_size="100000" camera_range="5">
+        <spiri id="sp" rab_range="1000" rab_data_size="100000" camera_range="5">
           <controller config="bcs" />
         </spiri>
       </entity>
