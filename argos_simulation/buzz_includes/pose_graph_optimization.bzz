@@ -1,3 +1,11 @@
+function listen_for_start_optimization_flag() {
+    neighbors.listen("start_optimization", 
+        function(vid, value, rid) {     
+            update_neighbor_has_started_optimization_flag()
+        }
+    )
+}
+
 function start_optimization() {
     # Add current neigbors
     neighbors_in_separator_range = neighbors.filter(
@@ -12,6 +20,7 @@ function start_optimization() {
     # Set speeds
     current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
     current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
+    neighbors.broadcast("start_optimization", 1)
 }
 
 function send_rotation_estimates_to_neighbors() {
