@@ -4,3 +4,4 @@ buzz/build
 *.bdb
 *bzz.*
 *.vscode/
+argos_simulation/log/fixed_datasets

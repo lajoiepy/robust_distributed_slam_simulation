@@ -7,7 +7,7 @@ POSE_ESTIMATE_CHANGE_THRESHOLD=0.1
 # To reduce the number of iteration (bool)
 USE_FLAGGED_INITIALIZATION=1
 # Reuse previous result as intialization
-INCREMENTAL_SOLVING=0
+INCREMENTAL_SOLVING=1
 # Pairwise Consistency Maximization parameters
 USE_PCM = 1
 CONSISTENCY_THRESHOLD = 0.90
