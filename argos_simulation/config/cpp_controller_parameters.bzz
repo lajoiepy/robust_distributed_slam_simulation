@@ -16,10 +16,12 @@ IS_SIMULATION=1
 NUMBER_OF_ROBOTS=10
 ERROR_FILE_NAME="log/datasets/errors.csv"
 # Debug parameters
-DEBUG=0
+DEBUG=1
+NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
 
 function load_cpp_controller_parameters() {
-    load_parameters(USE_PCM,
+    load_parameters(NUMBER_OF_STEPS_BEFORE_FAILSAFE,
+                    USE_PCM,
                     CONSISTENCY_THRESHOLD,
                     INCREMENTAL_SOLVING,
                     DEBUG,
