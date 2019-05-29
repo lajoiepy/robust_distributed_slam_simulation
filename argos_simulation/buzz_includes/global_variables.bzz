@@ -9,3 +9,5 @@ var neighbors_in_separator_range = {}
 var has_received_rotation_estimates = 0
 var has_received_pose_estimates = 0
 var has_sent_separator = 0
+var has_neighbors = 0
+var number_of_steps_with_neighbors = 0

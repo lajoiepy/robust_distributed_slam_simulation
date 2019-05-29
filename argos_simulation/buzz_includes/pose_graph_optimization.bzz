@@ -1,7 +1,42 @@
+function send_start_optimization_flag() {
+    neighbors_in_communication_range = neighbors.filter(
+      function(rid, data) { 
+        return data.distance < (100 * SEPARATOR_RANGE) # ARGoS simulation is in centimeters
+      }
+    )
+    if (neighbors_in_communication_range.count() == 0) {
+      has_neighbors = 0
+      number_of_steps_with_neighbors = 0
+    } else if (not has_neighbors and neighbors_in_communication_range.count() > 0) {
+      has_neighbors = 1
+    } else if (has_neighbors) {
+      number_of_steps_with_neighbors = number_of_steps_with_neighbors + 1
+      if (number_of_steps_with_neighbors % OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD == 0) {
+        neighbors.broadcast("start_optimization", 1)
+        number_of_steps_with_neighbors = 0
+        update_has_sent_start_optimization_flag()
+      }
+    }
+}
+
 function listen_for_start_optimization_flag() {
     neighbors.listen("start_optimization", 
-        function(vid, value, rid) {     
-            update_neighbor_has_started_optimization_flag()
+        function(vid, value, rid_received) {     
+            is_neighbor = 0
+            neighbors_in_communication_range = neighbors.filter(
+                function(rid, data) { 
+                    return data.distance < (100 * SEPARATOR_RANGE) # ARGoS simulation is in centimeters
+                }
+            )
+            neighbors_in_communication_range.foreach( function(rid, data) {
+                    if (rid == rid_received) {
+                        is_neighbor = 1
+                    }
+                }
+            )
+            if (is_neighbor) {
+                update_neighbor_has_started_optimization_flag()
+            }
         }
     )
 }
@@ -10,7 +45,7 @@ function start_optimization() {
     # Add current neigbors
     neighbors_in_separator_range = neighbors.filter(
       function(rid, data) { 
-        return data.distance < 100 * SEPARATOR_RANGE # ARGoS simulation is in centimeters
+        return data.distance < (100 * SEPARATOR_RANGE) # ARGoS simulation is in centimeters
       }
     )
     neighbors_in_separator_range.foreach( function(rid, data) {
@@ -20,7 +55,6 @@ function start_optimization() {
     # Set speeds
     current_translation_speed = SLOW_TRANSLATION_DURING_OPTIMIZATION
     current_max_rotation_speed = SLOW_ROTATION_DURING_OPTIMIZATION
-    neighbors.broadcast("start_optimization", 1)
 }
 
 function send_rotation_estimates_to_neighbors() {

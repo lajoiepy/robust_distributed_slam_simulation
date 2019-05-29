@@ -11,8 +11,6 @@ include "buzz_includes/pose_graph_optimization.bzz"
 
 # Executed at init time
 function init() {
-  # Show trajectory for debugging
-  show_colored_trajectory()
   # Initialization of random number generator. The controller function use time+id as the seed.
   srand(id)
   # Take off command for the Spiri drone model
@@ -20,6 +18,8 @@ function init() {
   # Load parameters
   load_cpp_controller_no_sensing_parameters()
   load_cpp_controller_parameters()
+  # Show trajectory for debugging
+  show_colored_trajectory()
 }
  
 # Executed every time step
@@ -44,14 +44,16 @@ function step() {
     # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
     separators_detection_communication_no_sensing()
     # Separator detection
-    random_number = rand_uniform(0, SEPARATOR_DETECTION_PERIOD)
-    if ((not has_sent_separator) and random_number > math.abs(current_step_ % (SEPARATOR_DETECTION_PERIOD) - SEPARATOR_DETECTION_PERIOD) ) {
+    random_number = rand_uniform(0, SEPARATOR_DETECTION_PERIOD) + 1
+    if ((not has_sent_separator) and random_number >= math.abs(current_step_ % SEPARATOR_DETECTION_PERIOD - SEPARATOR_DETECTION_PERIOD) ) {
       separators_detection_no_sensing()
       has_sent_separator = 1
     }
     if (current_step_ % SEPARATOR_DETECTION_PERIOD == 0) {
       has_sent_separator = 0
     }
+    send_start_optimization_flag()
+    listen_for_start_optimization_flag()
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
     # Move
