@@ -16,7 +16,7 @@ IS_SIMULATION=1
 NUMBER_OF_ROBOTS=10
 ERROR_FILE_NAME="log/datasets/errors.csv"
 # Debug parameters
-DEBUG=1
+DEBUG_PRINTS_LEVEL=0 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
 NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
 
 function load_cpp_controller_parameters() {
@@ -24,7 +24,7 @@ function load_cpp_controller_parameters() {
                     USE_PCM,
                     CONSISTENCY_THRESHOLD,
                     INCREMENTAL_SOLVING,
-                    DEBUG,
+                    DEBUG_PRINTS_LEVEL,
                     ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
                     ROTATION_ESTIMATE_CHANGE_THRESHOLD,
                     POSE_ESTIMATE_CHANGE_THRESHOLD,
