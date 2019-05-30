@@ -1,7 +1,7 @@
 # Sensor maximum range for realistic outlier generation
 SENSOR_RANGE=5.0
 # Probability of generating an outlier
-OUTLIER_PROBABILITY=0.0
+OUTLIER_PROBABILITY=0.2
 
 function load_cpp_controller_no_sensing_parameters() {
     load_no_sensing_parameters(SENSOR_RANGE, OUTLIER_PROBABILITY)
