@@ -52,7 +52,8 @@ function separators_detection_communication_no_sensing() {
         if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
           add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
                                           measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
-                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w)
+                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w,
+                                          measurement.covariance_matrix)
           if (measurement.robot_1_id == id) {
             update_pose_estimate_from_neighbor(measurement.robot_2_id, 
                                               measurement.robot_2_pose_id, 
