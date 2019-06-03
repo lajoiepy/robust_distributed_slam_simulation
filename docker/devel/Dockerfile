@@ -92,7 +92,7 @@ ARG CODE_UPDATE=unknown
 # Clone simulation
 RUN git clone https://github.com/lajoiepy/robust_distributed_slam_simulation.git /home/docker/robust_distributed_slam_simulation &&\
     cd /home/docker/robust_distributed_slam_simulation &&\
-    git checkout decentralization &&\
+    git checkout master &&\
     git submodule update --init --recursive
 
 # Install Robust Distributed Mapper
