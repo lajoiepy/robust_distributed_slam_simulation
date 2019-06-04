@@ -48,3 +48,12 @@ function random_movement_no_sensing() {
   # Translation command + add a fake noisy odometry measurement to the local graph
   pose_id_ = move_forward_fake_odometry(current_translation_speed/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
 }
+
+function move_away() {
+  # Rotation command
+  offset_yaw = rand_uniform(-10*current_rotation_speed, 10*current_rotation_speed)
+  rotate(offset_yaw * math.pi / 180.0)
+
+  # Translation command + add a fake noisy odometry measurement to the local graph
+  pose_id_ = move_forward_fake_odometry(5*current_translation_speed/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
+}

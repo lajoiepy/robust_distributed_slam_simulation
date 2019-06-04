@@ -86,11 +86,7 @@ function step() {
   } else if (optimizer_state() == 5) {  # End optimization
     debug.print("End Optimization")
     # Move faster to distance robots
-    current_translation_speed = 10*TRANS_SPEED
-    current_rotation_speed = 20*ROT_SPEED
-    random_movement_no_sensing()
-    current_translation_speed = TRANS_SPEED
-    current_rotation_speed = ROT_SPEED
+    move_away()
   } else {
     # Move
     random_movement_no_sensing()
