@@ -12,3 +12,4 @@ var has_received_pose_estimates = 0
 var has_sent_separator = 0
 var has_neighbors = 0
 var number_of_steps_with_neighbors = 0
+var number_of_steps_at_optimization_end = 0

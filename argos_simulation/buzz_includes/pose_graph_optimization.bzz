@@ -11,7 +11,7 @@ function send_start_optimization_flag() {
       has_neighbors = 1
     } else if (has_neighbors) {
       number_of_steps_with_neighbors = number_of_steps_with_neighbors + 1
-      if (number_of_steps_with_neighbors % OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD == 0) {
+      if (number_of_steps_with_neighbors % OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD == 0 and (current_step_ - number_of_steps_at_optimization_end) > MINIMAL_PERIOD_BETWEEN_OPTIMIZATIONS) {
         log("Robot ", id, ", lowest id = ", lowest_id_included_in_global_map)
         neighbors.broadcast("start_optimization", 1)
         number_of_steps_with_neighbors = 0

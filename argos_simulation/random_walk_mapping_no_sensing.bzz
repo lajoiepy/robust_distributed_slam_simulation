@@ -87,6 +87,7 @@ function step() {
     debug.print("End Optimization")
     # Move faster to distance robots
     move_away()
+    number_of_steps_at_optimization_end = current_step_
   } else {
     # Move
     random_movement_no_sensing()
