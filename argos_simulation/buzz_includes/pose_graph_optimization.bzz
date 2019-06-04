@@ -13,7 +13,7 @@ function send_start_optimization_flag() {
       number_of_steps_with_neighbors = number_of_steps_with_neighbors + 1
       if (number_of_steps_with_neighbors % OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD == 0) {
         log("Robot ", id, ", lowest id = ", lowest_id_included_in_global_map)
-        neighbors.broadcast("start_optimization", lowest_id_included_in_global_map)
+        neighbors.broadcast("start_optimization", 1)
         number_of_steps_with_neighbors = 0
         update_has_sent_start_optimization_flag()
       }
@@ -36,7 +36,7 @@ function listen_for_start_optimization_flag() {
                 }
             )
             if (is_neighbor) {
-                update_neighbor_has_started_optimization_flag(rid_received, value)
+                update_neighbor_has_started_optimization_flag(rid_received)
             }
         }
     )
@@ -155,13 +155,16 @@ function receive_pose_estimation_finished_flag_from_neighbors() {
 }
 
 function send_optimizer_state_to_neighbors() {
-    neighbors.broadcast("optimizer_state", optimizer_state())
+    state = {}
+    state[0] = optimizer_state()
+    state[1] = lowest_id_included_in_global_map
+    neighbors.broadcast("optimizer_state",state)
 }
 
 function receive_optimizer_state_from_neighbors() {
     neighbors.listen("optimizer_state", 
         function(vid, value, rid) {      
-            neighbor_state(rid, value)
+            neighbor_state(rid, value[0], value[1])
         }
     )
 }

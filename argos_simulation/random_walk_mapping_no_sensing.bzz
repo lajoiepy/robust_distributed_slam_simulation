@@ -85,8 +85,8 @@ function step() {
     debug.print("Pose Estimation")
   } else if (optimizer_state() == 5) {  # End optimization
     debug.print("End Optimization")
-    # Move Faster
-    current_translation_speed = 5*TRANS_SPEED
+    # Move faster to distance robots
+    current_translation_speed = 10*TRANS_SPEED
     current_rotation_speed = 20*ROT_SPEED
     random_movement_no_sensing()
     current_translation_speed = TRANS_SPEED
