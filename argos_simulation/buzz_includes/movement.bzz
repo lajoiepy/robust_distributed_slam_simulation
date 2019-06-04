@@ -2,7 +2,7 @@
 function random_movement_no_sensing() {
   # Rotation
   var cur_yaw = ((pose.orientation.yaw % (2. * math.pi)) / math.pi) * 180
-  var offset_yaw = rand_uniform(-current_max_rotation_speed, current_max_rotation_speed)
+  var offset_yaw = rand_uniform(-current_rotation_speed, current_rotation_speed)
   
   # Avoid the walls
   if (math.abs(math.abs(pose.position.x)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE) {

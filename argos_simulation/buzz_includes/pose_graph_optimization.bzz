@@ -12,7 +12,8 @@ function send_start_optimization_flag() {
     } else if (has_neighbors) {
       number_of_steps_with_neighbors = number_of_steps_with_neighbors + 1
       if (number_of_steps_with_neighbors % OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD == 0) {
-        neighbors.broadcast("start_optimization", 1)
+        log("Robot ", id, ", lowest id = ", lowest_id_included_in_global_map)
+        neighbors.broadcast("start_optimization", lowest_id_included_in_global_map)
         number_of_steps_with_neighbors = 0
         update_has_sent_start_optimization_flag()
       }
@@ -35,7 +36,7 @@ function listen_for_start_optimization_flag() {
                 }
             )
             if (is_neighbor) {
-                update_neighbor_has_started_optimization_flag()
+                update_neighbor_has_started_optimization_flag(rid_received, value)
             }
         }
     )
