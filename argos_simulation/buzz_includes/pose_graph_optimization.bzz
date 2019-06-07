@@ -141,14 +141,14 @@ function receive_rotation_estimation_finished_flag_from_neighbors() {
 
 function send_pose_estimation_finished_flag_to_neighbors() {
     if (pose_estimation_stopping_conditions()) {
-        neighbors.broadcast("pose_estimation_is_finished", 1)
+        neighbors.broadcast("pose_estimation_is_finished", anchor_offset)
     }
 }
 
 function receive_pose_estimation_finished_flag_from_neighbors() {
     neighbors.listen("pose_estimation_is_finished", 
         function(vid, value, rid) {      
-            neighbor_pose_estimation_is_finished(rid)
+            neighbor_pose_estimation_is_finished(rid, value)
         }
     )
 }

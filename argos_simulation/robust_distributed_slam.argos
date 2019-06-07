@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="100"
+    <experiment length="10000"
                 ticks_per_second="10" />
     <profiling file="profile.txt"
              format="human_readable"
