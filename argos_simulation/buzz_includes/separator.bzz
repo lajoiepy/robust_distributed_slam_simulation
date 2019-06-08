@@ -101,12 +101,14 @@ function separators_detection_no_sensing() {
     current_separator_measurements.measurements[i] = current_separator_measurement
 
     # Separator visualization
-    if (SIMULATION_TIME_DIVIDER == 1) {
+    if (SIMULATION_TIME_DIVIDER == 1 and MOVEMENT_PERIOD == 1) {
       if (is_outlier == 1) {
         debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
       } else {
         debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
       }
+    } else {
+      log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", is_outlier)
     }
   }
   current_number_of_other_robot_poses_ = 0

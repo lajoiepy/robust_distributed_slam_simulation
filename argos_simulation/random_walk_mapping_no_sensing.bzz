@@ -30,6 +30,9 @@ function step() {
   }
   receive_optimizer_state_from_neighbors()
   send_optimizer_state_to_neighbors()
+  if (current_step_ % MOVEMENT_PERIOD == 0) {
+    random_movement_no_sensing()
+  }
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
@@ -37,8 +40,6 @@ function step() {
     # Reset flags
     has_received_rotation_estimates = 0
     has_received_pose_estimates = 0
-    # Move
-    random_movement_no_sensing()
     # Communication
     # Note that incoming messages (listen) are executed always first (after sensing), 
     # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
@@ -56,8 +57,6 @@ function step() {
     listen_for_start_optimization_flag()
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
-    # Move
-    random_movement_no_sensing()
     debug.print("Start Optimization")
   } else if (optimizer_state() == 2) {  # Rotation Estimation
     # Receive finished flags from other robots
@@ -68,8 +67,6 @@ function step() {
     send_rotation_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
     send_rotation_estimation_finished_flag_to_neighbors()
-    # Move
-    random_movement_no_sensing()
     debug.print("Rotation Estimation")
   } else if (optimizer_state() == 4) {  # PoseEstimation
     # Receive finished flags from other robots
@@ -80,20 +77,15 @@ function step() {
     send_pose_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
     send_pose_estimation_finished_flag_to_neighbors()
-    # Move
-    random_movement_no_sensing()
     debug.print("Pose Estimation")
   } else if (optimizer_state() == 5) {  # End optimization
     debug.print("End Optimization")
-    # Move faster to distance robots
-    move_away()
     number_of_steps_at_optimization_end = current_step_
   } else {
-    # Move
-    random_movement_no_sensing()
   }
   # Increment number of steps
-  current_step_ = current_step_ + 1 
+  optimizer_tick()
+  current_step_ = current_step_ + 1
 }
  
 # Execute at exit

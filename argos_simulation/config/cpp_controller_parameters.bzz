@@ -3,7 +3,7 @@ ROTATION_NOISE_STD=0.01
 TRANSLATION_NOISE_STD=0.1
 # Threshold for stopping condition in optimization
 ROTATION_ESTIMATE_CHANGE_THRESHOLD=0.1
-POSE_ESTIMATE_CHANGE_THRESHOLD=0.2
+POSE_ESTIMATE_CHANGE_THRESHOLD=0.1
 # To reduce the number of iteration (bool)
 USE_FLAGGED_INITIALIZATION=1
 # Reuse previous result as intialization
@@ -19,7 +19,7 @@ ERROR_FILE_NAME="log/datasets/results.csv"
 DEBUG_PRINTS_LEVEL=2 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
 NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
 MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=50 # Avoid cases when the convergence is really slow
-MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=100000
+MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=1000
 
 function load_cpp_controller_parameters() {
     load_parameters(MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
