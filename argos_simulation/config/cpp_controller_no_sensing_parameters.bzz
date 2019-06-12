@@ -1,5 +1,5 @@
-# Sensor maximum range for realistic outlier generation
-SENSOR_RANGE=10.0
+# Sensor maximum range
+SENSOR_RANGE=20.0
 # Probability of generating an outlier
 OUTLIER_PROBABILITY=0.5
 

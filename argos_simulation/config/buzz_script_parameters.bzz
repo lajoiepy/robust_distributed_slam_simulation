@@ -1,15 +1,15 @@
 # Reduce the number of measurments in the simulation if > 1
-MOVEMENT_PERIOD = 10
+MOVEMENT_PERIOD = 1
 # Movement of the robots
 TRANS_SPEED = 0.5 # Speed similar to the average speed in the CSAIL (0.4301) and FR079 (0.4715) datasets 
 ROT_SPEED = 25
 MAX_ROT_SPEED = 45
 # Arena characteristics
-ARENA_SIZE = 20.0
+ARENA_SIZE = 50.0
 # Tolerance for the collision avoidance with the walls
 ARENA_EDGE_TOLERANCE = 5.0
 # Maximum range for separator detection
-SEPARATOR_RANGE = 3.0
+SEPARATOR_RANGE = 5.0
 # To control the messages size
 MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 100
 # Slows down the simulation if > 1

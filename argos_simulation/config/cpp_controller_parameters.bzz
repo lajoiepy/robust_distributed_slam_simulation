@@ -1,9 +1,9 @@
 # Expected levels of noise
 ROTATION_NOISE_STD=0.01
-TRANSLATION_NOISE_STD=0.1
+TRANSLATION_NOISE_STD=0.01
 # Threshold for stopping condition in optimization
 ROTATION_ESTIMATE_CHANGE_THRESHOLD=0.1
-POSE_ESTIMATE_CHANGE_THRESHOLD=0.1
+POSE_ESTIMATE_CHANGE_THRESHOLD=0.5
 # To reduce the number of iteration (bool)
 USE_FLAGGED_INITIALIZATION=1
 # Reuse previous result as intialization

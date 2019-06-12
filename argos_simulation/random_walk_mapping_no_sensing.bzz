@@ -58,7 +58,7 @@ function step() {
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
     debug.print("Start Optimization")
-  } else if (optimizer_state() == 2) {  # Rotation Estimation
+  } else if (optimizer_state() == 3) {  # Rotation Estimation
     # Receive finished flags from other robots
     receive_rotation_estimation_finished_flag_from_neighbors()
     # Receive estimates from neighbors
@@ -68,7 +68,7 @@ function step() {
     # Send finished flag if stopping conditions are met
     send_rotation_estimation_finished_flag_to_neighbors()
     debug.print("Rotation Estimation")
-  } else if (optimizer_state() == 4) {  # PoseEstimation
+  } else if (optimizer_state() == 5) {  # PoseEstimation
     # Receive finished flags from other robots
     receive_pose_estimation_finished_flag_from_neighbors()
     # Receive estimates from neighbors
@@ -78,7 +78,7 @@ function step() {
     # Send finished flag if stopping conditions are met
     send_pose_estimation_finished_flag_to_neighbors()
     debug.print("Pose Estimation")
-  } else if (optimizer_state() == 5) {  # End optimization
+  } else if (optimizer_state() == 6) {  # End optimization
     debug.print("End Optimization")
     number_of_steps_at_optimization_end = current_step_
   } else {
