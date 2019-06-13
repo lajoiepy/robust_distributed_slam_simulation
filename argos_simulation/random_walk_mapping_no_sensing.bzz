@@ -28,6 +28,7 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
+  optimizer_tick()
   receive_optimizer_state_from_neighbors()
   send_optimizer_state_to_neighbors()
   if (current_step_ % MOVEMENT_PERIOD == 0) {
@@ -84,7 +85,6 @@ function step() {
   } else {
   }
   # Increment number of steps
-  optimizer_tick()
   current_step_ = current_step_ + 1
 }
  
