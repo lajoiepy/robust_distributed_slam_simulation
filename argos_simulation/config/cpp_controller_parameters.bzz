@@ -18,8 +18,8 @@ ERROR_FILE_NAME="log/datasets/results.csv"
 # Debug parameters
 DEBUG_PRINTS_LEVEL=2 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
 NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
-MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=50 # Avoid cases when the convergence is really slow
-MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=300
+MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=20 # Avoid cases when the convergence is really slow
+MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=100
 
 function load_cpp_controller_parameters() {
     load_parameters(MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
