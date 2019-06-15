@@ -40,9 +40,11 @@ function separators_detection_communication_no_sensing() {
         }
       }
     }
-  )
+  )  
+}
 
-  # Listen to neighbor poses
+# Function that listen for separators from neighbors
+function listen_for_separators() {
   neighbors.listen("separator_measurements",
     function(vid, value, rid) {   
       for (i = 0, i < value.number, i = i + 1) {

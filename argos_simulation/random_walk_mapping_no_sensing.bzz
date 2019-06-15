@@ -31,6 +31,7 @@ function step() {
   optimizer_tick()
   receive_optimizer_state_from_neighbors()
   send_optimizer_state_to_neighbors()
+  listen_for_separators()
   if (current_step_ % MOVEMENT_PERIOD == 0) {
     random_movement_no_sensing()
   }
@@ -82,6 +83,7 @@ function step() {
   } else if (optimizer_state() == 6) {  # End optimization
     debug.print("End Optimization")
     number_of_steps_at_optimization_end = current_step_
+    number_of_steps_with_neighbors = 0
   } else {
   }
   # Increment number of steps
