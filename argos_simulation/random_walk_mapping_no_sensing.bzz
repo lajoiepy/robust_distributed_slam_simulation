@@ -31,9 +31,11 @@ function step() {
   # Optimizer clock tick to trigger the state machine
   optimizer_tick()
 
+  # Send state
+  send_optimizer_state_to_neighbors()
+  
   # The listener functions are always on
   receive_optimizer_state_from_neighbors()
-  send_optimizer_state_to_neighbors()
   listen_for_separators()
   listen_for_fake_separators_detection_information()
   listen_for_start_optimization_flag()

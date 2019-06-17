@@ -86,7 +86,6 @@ function separators_detection_no_sensing() {
     } else {
       log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", is_outlier)
     }
-    log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid)
   }
   current_number_of_other_robot_poses_ = 0
 
@@ -117,7 +116,6 @@ function listen_for_separators() {
                                               initial_estimate)
           }
         }
-        log("Robot ", id, " : Separator added with Robot ", rid)
       }
     }
   )
