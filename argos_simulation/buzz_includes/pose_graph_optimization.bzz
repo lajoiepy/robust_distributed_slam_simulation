@@ -83,11 +83,13 @@ function receive_and_update_rotation_estimates_from_neighbors() {
             has_received_rotation_estimates = 1
         }
     )
-    if (has_received_rotation_estimates) {
-        # Check and reset flags if needed
-        check_if_all_estimation_done_and_reset()
-        if (optimizer_phase() == 1) {
-            estimate_rotation_and_update_rotation()
+    if (optimizer_state() == 3) {
+        if (has_received_rotation_estimates) {
+            # Check and reset flags if needed
+            check_if_all_estimation_done_and_reset()
+            if (optimizer_phase() == 1) {
+                estimate_rotation_and_update_rotation()
+            }
         }
     }
 }
@@ -117,11 +119,13 @@ function receive_and_update_pose_estimates_from_neighbors() {
             has_received_pose_estimates = 1
         }
     )
-    if (has_received_pose_estimates) {
-        # Check and reset flags if needed
-        check_if_all_estimation_done_and_reset()
-        if (optimizer_phase() == 1) {
-            estimate_pose_and_update_pose()
+    if (optimizer_state() == 5) {
+        if (has_received_pose_estimates) {
+            # Check and reset flags if needed
+            check_if_all_estimation_done_and_reset()
+            if (optimizer_phase() == 1) {
+                estimate_pose_and_update_pose()
+            }
         }
     }
 }

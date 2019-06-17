@@ -10,8 +10,6 @@ ARENA_SIZE = 50.0
 ARENA_EDGE_TOLERANCE = 5.0
 # Maximum range for separator detection
 SEPARATOR_RANGE = 10.0
-# To control the messages size
-MAX_NUMBER_MEASUREMENT_PER_MESSAGE = 100
 # Slows down the simulation if > 1
 SIMULATION_TIME_DIVIDER = 1
 # To control the number of fake separator detected

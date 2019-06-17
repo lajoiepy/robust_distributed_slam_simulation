@@ -13,8 +13,10 @@ function separators_detection_communication_no_sensing() {
     }
     neighbors.broadcast("information_for_fake_separator", this_robot_ground_truth_pose_and_estimate)
   }
+}
 
-  # Listen to neighbor poses
+# Listen to neighbor poses
+function listen_for_fake_separators_detection_information() {
   neighbors.listen("information_for_fake_separator",
     function(vid, value, rid) {   
       # To avoid version control, the robot with the lowest ID in the pair computes the separator
@@ -43,38 +45,10 @@ function separators_detection_communication_no_sensing() {
   )  
 }
 
-# Function that listen for separators from neighbors
-function listen_for_separators() {
-  neighbors.listen("separator_measurements",
-    function(vid, value, rid) {   
-      for (i = 0, i < value.number, i = i + 1) {
-        # Send information to controller to add separator to graph if it concern this robot
-        measurement = value.measurements[i]
-        initial_estimate = value.initial_estimates[i]
-        if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
-          add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
-                                          measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
-                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w,
-                                          measurement.covariance_matrix)
-          if (measurement.robot_1_id == id) {
-            update_pose_estimate_from_neighbor(measurement.robot_2_id, 
-                                              measurement.robot_2_pose_id, 
-                                              initial_estimate)
-          } else {
-            update_pose_estimate_from_neighbor(measurement.robot_1_id, 
-                                              measurement.robot_1_pose_id, 
-                                              initial_estimate)
-          }
-        }
-      }
-    }
-  )
-}
-
 # Function to detect inter-robot loop closures (separators) and save them, without sensing
 function separators_detection_no_sensing() {
   
-  number_of_separators = math.min(current_number_of_other_robot_poses_, MAX_NUMBER_MEASUREMENT_PER_MESSAGE)
+  number_of_separators = current_number_of_other_robot_poses_
 
   current_separator_measurements = {}
   current_separator_measurements.number = number_of_separators
@@ -112,9 +86,39 @@ function separators_detection_no_sensing() {
     } else {
       log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", is_outlier)
     }
+    log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid)
   }
   current_number_of_other_robot_poses_ = 0
 
   # Broadcast separator measurements
   neighbors.broadcast("separator_measurements", current_separator_measurements)
+}
+
+# Function that listen for separators from neighbors
+function listen_for_separators() {
+  neighbors.listen("separator_measurements",
+    function(vid, value, rid) {   
+      for (i = 0, i < value.number, i = i + 1) {
+        # Send information to controller to add separator to graph if it concerns this robot
+        measurement = value.measurements[i]
+        initial_estimate = value.initial_estimates[i]
+        if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
+          add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
+                                          measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
+                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w,
+                                          measurement.covariance_matrix)
+          if (measurement.robot_1_id == id) {
+            update_pose_estimate_from_neighbor(measurement.robot_2_id, 
+                                              measurement.robot_2_pose_id, 
+                                              initial_estimate)
+          } else {
+            update_pose_estimate_from_neighbor(measurement.robot_1_id, 
+                                              measurement.robot_1_pose_id, 
+                                              initial_estimate)
+          }
+        }
+        log("Robot ", id, " : Separator added with Robot ", rid)
+      }
+    }
+  )
 }

@@ -28,13 +28,25 @@ function step() {
     # Init optimizer
     init_optimizer(OPTIMIZER_PERIOD)
   }
+  # Optimizer clock tick to trigger the state machine
   optimizer_tick()
+
+  # The listener functions are always on
   receive_optimizer_state_from_neighbors()
   send_optimizer_state_to_neighbors()
   listen_for_separators()
+  listen_for_fake_separators_detection_information()
+  listen_for_start_optimization_flag()
+  receive_rotation_estimation_finished_flag_from_neighbors()
+  receive_and_update_rotation_estimates_from_neighbors()
+  receive_pose_estimation_finished_flag_from_neighbors()
+  receive_and_update_pose_estimates_from_neighbors()
+
+  # Move robot
   if (current_step_ % MOVEMENT_PERIOD == 0) {
     random_movement_no_sensing()
   }
+  # State machine
   if (optimizer_state() == 0) { # Not optimizing
     # Set speeds
     current_translation_speed = TRANS_SPEED
@@ -56,25 +68,16 @@ function step() {
       has_sent_separator = 0
     }
     send_start_optimization_flag()
-    listen_for_start_optimization_flag()
   } else if (optimizer_state() == 1) {  # Start optimizing
     start_optimization()
     debug.print("Start Optimization")
   } else if (optimizer_state() == 3) {  # Rotation Estimation
-    # Receive finished flags from other robots
-    receive_rotation_estimation_finished_flag_from_neighbors()
-    # Receive estimates from neighbors
-    receive_and_update_rotation_estimates_from_neighbors()
     # Send estimates to neighbors
     send_rotation_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
     send_rotation_estimation_finished_flag_to_neighbors()
     debug.print("Rotation Estimation")
   } else if (optimizer_state() == 5) {  # PoseEstimation
-    # Receive finished flags from other robots
-    receive_pose_estimation_finished_flag_from_neighbors()
-    # Receive estimates from neighbors
-    receive_and_update_pose_estimates_from_neighbors()
     # Send estimates to neighbors
     send_pose_estimates_to_neighbors()
     # Send finished flag if stopping conditions are met
