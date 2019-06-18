@@ -2,7 +2,7 @@
 MOVEMENT_PERIOD = 1
 # Movement of the robots
 TRANS_SPEED = 0.5 # Speed similar to the average speed in the CSAIL (0.4301) and FR079 (0.4715) datasets 
-ROT_SPEED = 15
+ROT_SPEED = 30
 MAX_ROT_SPEED = 45
 # Arena characteristics
 ARENA_SIZE = 50.0
