@@ -89,6 +89,10 @@ function step() {
     debug.print("End Optimization")
     number_of_steps_at_optimization_end = current_step_
     number_of_steps_with_neighbors = 0
+    neighbors_in_separator_range.foreach( function(neighbor_in_range_id, neighbor_in_range_data) {
+        last_optimization_neighbor = neighbor_in_range_id
+      }
+    )
   } else {
   }
   # Increment number of steps

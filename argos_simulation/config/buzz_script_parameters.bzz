@@ -17,7 +17,6 @@ SEPARATOR_DETECTION_PERIOD = 1 * MOVEMENT_PERIOD
 # To control the period between optimizations. (e.g., if 100, robots will wait 100 steps before to start optimizing)
 OPTIMIZER_PERIOD = 100 * MOVEMENT_PERIOD
 OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD = 5 * MOVEMENT_PERIOD
-MINIMAL_PERIOD_BETWEEN_OPTIMIZATIONS = 20 * MOVEMENT_PERIOD
 # During optimization we want to slow down the robots so they stay in communication range during the process
 SLOW_ROTATION_DURING_OPTIMIZATION = 1
 SLOW_TRANSLATION_DURING_OPTIMIZATION = 0.0001
