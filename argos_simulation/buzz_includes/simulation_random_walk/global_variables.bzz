@@ -1,0 +1,16 @@
+# Global variables
+var pose_id_ = 0
+var current_other_robot_ground_truth_pose_and_estimates_ = {}
+var current_number_of_other_robot_poses_ = 0 
+var current_step_ = 0
+var current_translation_speed = TRANS_SPEED
+var current_rotation_speed = ROT_SPEED
+var current_max_rotation_speed = MAX_ROT_SPEED
+var neighbors_in_separator_range = {}
+var has_received_rotation_estimates = 0
+var has_received_pose_estimates = 0
+var has_sent_separator = 0
+var has_neighbors = 0
+var number_of_steps_with_neighbors = 0
+var number_of_steps_at_optimization_end = 0
+var last_optimization_neighbor = -1

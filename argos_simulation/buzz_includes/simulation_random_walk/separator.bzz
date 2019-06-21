@@ -1,0 +1,122 @@
+# Function share information between robots for separator detection without sensing.
+function separators_detection_communication_no_sensing() {
+  # Broadcast ground truth pose to compute separator measurement only each SIMULATION_TIME_DIVIDER allow communication
+  if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
+    update_current_pose_estimate(pose_id_)
+    this_robot_ground_truth_pose_and_estimate = {
+      .x = pose.position.x,
+      .y = pose.position.y,
+      .z = pose.position.z,
+      .yaw = pose.orientation.yaw,
+      .pose_id = pose_id_,
+      .estimate = current_pose_estimate
+    }
+    neighbors.broadcast("information_for_fake_separator", this_robot_ground_truth_pose_and_estimate)
+  }
+}
+
+# Listen to neighbor poses
+function listen_for_fake_separators_detection_information() {
+  neighbors.listen("information_for_fake_separator",
+    function(vid, value, rid) {   
+      # To avoid version control, the robot with the lowest ID in the pair computes the separator
+      # To avoid packet loss, we don't compute new separator when they are to close to disconnect. 
+      # We also need to avoid adding separator on the first node (0) because it would conflict with the prior (anchoring)
+      if (id < rid and neighbors.get(rid).distance/100 < SEPARATOR_RANGE and value.pose_id > 0) {
+        current_other_robot_ground_truth_pose_and_estimate = {
+          .value = value,
+          .rid = rid
+        }          
+        # Check if we already have an estimate for this robot, if so update it
+        other_robot_known = 0
+        for (i = 0, i < current_number_of_other_robot_poses_, i = i + 1) {
+          if (current_other_robot_ground_truth_pose_and_estimates_[i].rid == rid) {
+            current_other_robot_ground_truth_pose_and_estimates_[i] = current_other_robot_ground_truth_pose_and_estimate
+            other_robot_known = 1
+          }
+        }
+        # Otherwise add it
+        if (not other_robot_known) {
+          current_other_robot_ground_truth_pose_and_estimates_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose_and_estimate
+          current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
+        }
+      }
+    }
+  )  
+}
+
+# Function to detect inter-robot loop closures (separators) and save them, without sensing
+function separators_detection_no_sensing() {
+  
+  number_of_separators = current_number_of_other_robot_poses_
+
+  current_separator_measurements = {}
+  current_separator_measurements.number = number_of_separators
+  current_separator_measurements.measurements = {}
+  current_separator_measurements.initial_estimates = {}
+  # Add fake separator on every rendez-vous
+  for (i = 0, i < number_of_separators, i = i + 1) {
+    current_other_robot_ground_truth_pose_and_estimate = current_other_robot_ground_truth_pose_and_estimates_[i]
+
+    # Add fake separator factor in the graph
+    is_outlier = compute_fake_rendezvous_separator(
+                                      current_other_robot_ground_truth_pose_and_estimate.value.pose_id, current_other_robot_ground_truth_pose_and_estimate.value.x, 
+                                      current_other_robot_ground_truth_pose_and_estimate.value.y, current_other_robot_ground_truth_pose_and_estimate.value.z, 
+                                      current_other_robot_ground_truth_pose_and_estimate.value.yaw, current_other_robot_ground_truth_pose_and_estimate.rid, pose_id_)
+
+    # Save other robot estimate
+    update_pose_estimate_from_neighbor(current_other_robot_ground_truth_pose_and_estimate.rid, 
+                                      current_other_robot_ground_truth_pose_and_estimate.value.pose_id, 
+                                      current_other_robot_ground_truth_pose_and_estimate.value.estimate)
+
+    # Add own estimate to message
+    update_current_pose_estimate(pose_id_)
+    current_separator_measurements.initial_estimates[i] = current_pose_estimate
+
+    # Add measurement to message
+    current_separator_measurements.measurements[i] = current_separator_measurement
+
+    # Separator visualization
+    if (SIMULATION_TIME_DIVIDER == 1 and MOVEMENT_PERIOD == 1) {
+      if (is_outlier == 1) {
+        debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
+      } else {
+        debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
+      }
+    } else {
+      log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", is_outlier)
+    }
+  }
+  current_number_of_other_robot_poses_ = 0
+
+  # Broadcast separator measurements
+  neighbors.broadcast("separator_measurements", current_separator_measurements)
+}
+
+# Function that listen for separators from neighbors
+function listen_for_separators() {
+  neighbors.listen("separator_measurements",
+    function(vid, value, rid) {   
+      for (i = 0, i < value.number, i = i + 1) {
+        # Send information to controller to add separator to graph if it concerns this robot
+        measurement = value.measurements[i]
+        initial_estimate = value.initial_estimates[i]
+        if (measurement.robot_1_id == id or measurement.robot_2_id == id) {
+          add_separator_to_local_graph(measurement.robot_1_id, measurement.robot_2_id, measurement.robot_1_pose_id, 
+                                          measurement.robot_2_pose_id, measurement.x, measurement.y, measurement.z, 
+                                          measurement.q_x, measurement.q_y, measurement.q_z, measurement.q_w,
+                                          measurement.covariance_matrix)
+          if (measurement.robot_1_id == id) {
+            update_pose_estimate_from_neighbor(measurement.robot_2_id, 
+                                              measurement.robot_2_pose_id, 
+                                              initial_estimate)
+          } else {
+            update_pose_estimate_from_neighbor(measurement.robot_1_id, 
+                                              measurement.robot_1_pose_id, 
+                                              initial_estimate)
+          }
+        }
+      }
+    }
+  )
+}

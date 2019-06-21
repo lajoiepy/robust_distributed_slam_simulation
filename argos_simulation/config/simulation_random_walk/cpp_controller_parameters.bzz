@@ -1,0 +1,38 @@
+# Expected levels of noise
+ROTATION_NOISE_STD=0.01
+TRANSLATION_NOISE_STD=0.1
+# Threshold for stopping condition in optimization
+ROTATION_ESTIMATE_CHANGE_THRESHOLD=0.1
+POSE_ESTIMATE_CHANGE_THRESHOLD=0.5
+# To reduce the number of iteration (bool)
+USE_FLAGGED_INITIALIZATION=1
+# Reuse previous result as intialization
+INCREMENTAL_SOLVING=1
+# Pairwise Consistency Maximization parameters
+USE_PCM = 1
+CONSISTENCY_THRESHOLD = 0.90
+# Simulation specific parameters
+IS_SIMULATION=1
+NUMBER_OF_ROBOTS=5
+ERROR_FILE_NAME="log/datasets/results.csv"
+# Debug parameters
+DEBUG_PRINTS_LEVEL=3 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
+NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
+MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=100 # Avoid cases when the convergence is really slow (quite rare)
+MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=100
+
+function load_cpp_controller_parameters() {
+    load_parameters(MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
+                    MAX_NUMBER_OF_POSE_ESTIMATION_STEPS,
+                    NUMBER_OF_STEPS_BEFORE_FAILSAFE,
+                    USE_PCM,
+                    CONSISTENCY_THRESHOLD,
+                    INCREMENTAL_SOLVING,
+                    DEBUG_PRINTS_LEVEL,
+                    ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
+                    ROTATION_ESTIMATE_CHANGE_THRESHOLD,
+                    POSE_ESTIMATE_CHANGE_THRESHOLD,
+                    USE_FLAGGED_INITIALIZATION,
+                    IS_SIMULATION, NUMBER_OF_ROBOTS,
+                    ERROR_FILE_NAME)
+}

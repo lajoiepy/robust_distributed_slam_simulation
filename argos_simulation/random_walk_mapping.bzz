@@ -1,0 +1,104 @@
+include "buzz_includes/buzz_utils/vec2.bzz"
+include "buzz_includes/buzz_utils/string.bzz"
+include "config/simulation_random_walk/buzz_script_parameters.bzz"
+include "config/simulation_random_walk/cpp_controller_parameters.bzz"
+include "config/simulation_random_walk/cpp_controller_no_sensing_parameters.bzz"
+include "buzz_includes/simulation_random_walk/global_variables.bzz"
+include "buzz_includes/debug.bzz"
+include "buzz_includes/simulation_random_walk/movement.bzz"
+include "buzz_includes/simulation_random_walk/separator.bzz"
+include "buzz_includes/pose_graph_optimization.bzz"
+
+# Executed at init time
+function init() {
+  # Initialization of random number generator. The controller function use time+id as the seed.
+  srand(id)
+  # Take off command for the Spiri drone model
+  takeoff()
+  # Load parameters
+  load_cpp_controller_no_sensing_parameters()
+  load_cpp_controller_parameters()
+  # Show trajectory for debugging
+  show_colored_trajectory()
+}
+ 
+# Executed every time step
+function step() {
+  if (current_step_ == 0) {
+    # Init optimizer
+    init_optimizer(OPTIMIZER_PERIOD)
+  }
+  # Optimizer clock tick to trigger the state machine
+  optimizer_tick()
+
+  # Send state
+  send_optimizer_state_to_neighbors()
+  
+  # The listener functions are always on
+  receive_optimizer_state_from_neighbors()
+  listen_for_separators()
+  listen_for_fake_separators_detection_information()
+  listen_for_start_optimization_flag()
+  receive_rotation_estimation_finished_flag_from_neighbors()
+  receive_and_update_rotation_estimates_from_neighbors()
+  receive_pose_estimation_finished_flag_from_neighbors()
+  receive_and_update_pose_estimates_from_neighbors()
+
+  # Move robot
+  if (current_step_ % MOVEMENT_PERIOD == 0) {
+    random_movement_no_sensing()
+  }
+  # State machine
+  if (optimizer_state() == 0) { # Not optimizing
+    # Set speeds
+    current_translation_speed = TRANS_SPEED
+    current_max_rotation_speed = MAX_ROT_SPEED
+    # Reset flags
+    has_received_rotation_estimates = 0
+    has_received_pose_estimates = 0
+    # Communication
+    # Note that incoming messages (listen) are executed always first (after sensing), 
+    # see Section II of "Buzz: An Extensible Programming Language for Self-Organizing Heterogeneous Robot Swarms"
+    separators_detection_communication_no_sensing()
+    # Separator detection
+    random_number = rand_uniform(0, SEPARATOR_DETECTION_PERIOD) + 1
+    if ((not has_sent_separator) and random_number >= math.abs(current_step_ % SEPARATOR_DETECTION_PERIOD - SEPARATOR_DETECTION_PERIOD) ) {
+      separators_detection_no_sensing()
+      has_sent_separator = 1
+    }
+    if (current_step_ % SEPARATOR_DETECTION_PERIOD == 0) {
+      has_sent_separator = 0
+    }
+    send_start_optimization_flag()
+  } else if (optimizer_state() == 1) {  # Start optimizing
+    start_optimization()
+    debug.print("Start Optimization")
+  } else if (optimizer_state() == 3) {  # Rotation Estimation
+    # Send estimates to neighbors
+    send_rotation_estimates_to_neighbors()
+    # Send finished flag if stopping conditions are met
+    send_rotation_estimation_finished_flag_to_neighbors()
+    debug.print("Rotation Estimation")
+  } else if (optimizer_state() == 5) {  # PoseEstimation
+    # Send estimates to neighbors
+    send_pose_estimates_to_neighbors()
+    # Send finished flag if stopping conditions are met
+    send_pose_estimation_finished_flag_to_neighbors()
+    debug.print("Pose Estimation")
+  } else if (optimizer_state() == 6) {  # End optimization
+    debug.print("End Optimization")
+    number_of_steps_at_optimization_end = current_step_
+    number_of_steps_with_neighbors = 0
+    neighbors_in_separator_range.foreach( function(neighbor_in_range_id, neighbor_in_range_data) {
+        last_optimization_neighbor = neighbor_in_range_id
+      }
+    )
+  } else {
+  }
+  # Increment number of steps
+  current_step_ = current_step_ + 1
+}
+ 
+# Execute at exit
+function destroy() {
+}

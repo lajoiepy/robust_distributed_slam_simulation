@@ -1,0 +1,59 @@
+# Calculates a random movement avoiding the outer walls
+function random_movement_no_sensing() {
+  # Rotation
+  var cur_yaw = ((pose.orientation.yaw % (2. * math.pi)) / math.pi) * 180
+  var offset_yaw = rand_uniform(-current_rotation_speed, current_rotation_speed)
+  
+  # Avoid the walls
+  if (math.abs(math.abs(pose.position.x)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE) {
+    if (pose.position.x > 0){
+      if (cur_yaw < 90) {
+        offset_yaw = offset_yaw + current_max_rotation_speed
+      }
+      if (cur_yaw > 270) {
+        offset_yaw = offset_yaw - current_max_rotation_speed
+      }
+    }
+    if (pose.position.x < 0){
+      if (cur_yaw < 270 and cur_yaw > 180) {
+        offset_yaw = offset_yaw + current_max_rotation_speed
+      }
+      if (cur_yaw > 90 and cur_yaw < 180) {
+        offset_yaw = offset_yaw - current_max_rotation_speed
+      }
+    }  
+  }
+  if (math.abs(math.abs(pose.position.y)-ARENA_SIZE/2)<ARENA_EDGE_TOLERANCE){
+    if (pose.position.y > 0){
+      if (cur_yaw < 180 and cur_yaw > 90) {
+        offset_yaw = offset_yaw + current_max_rotation_speed
+      }
+      if (cur_yaw < 90) {
+        offset_yaw = offset_yaw - current_max_rotation_speed
+      }
+    }
+    if (pose.position.y < 0){
+      if (cur_yaw < 360 and cur_yaw > 270) {
+        offset_yaw = offset_yaw + current_max_rotation_speed
+      }
+      if (cur_yaw < 270 and cur_yaw > 180) {
+        offset_yaw = offset_yaw - current_max_rotation_speed
+      }
+    }
+  }
+
+  # Rotation command
+  rotate(offset_yaw * math.pi / 180.0)
+
+  # Translation command + add a fake noisy odometry measurement to the local graph
+  pose_id_ = move_forward_fake_odometry(current_translation_speed/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
+}
+
+function move_away() {
+  # Rotation command
+  offset_yaw = rand_uniform(-10*current_rotation_speed, 10*current_rotation_speed)
+  rotate(offset_yaw * math.pi / 180.0)
+
+  # Translation command + add a fake noisy odometry measurement to the local graph
+  pose_id_ = move_forward_fake_odometry(5*current_translation_speed/SIMULATION_TIME_DIVIDER, SIMULATION_TIME_DIVIDER)
+}

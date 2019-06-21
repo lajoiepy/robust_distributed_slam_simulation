@@ -8,9 +8,9 @@
     <system threads="0" />
     <experiment length="100"
                 ticks_per_second="10" />
-    <profiling file="profile.txt"
+    <!--profiling file="profile.txt"
              format="human_readable"
-             truncate_file="true" />
+             truncate_file="true" /-->
   </framework>
   
 
@@ -29,8 +29,8 @@
         <colored_blob_perspective_camera implementation="default" medium="leds" show_rays="true" />
         <positioning                     implementation="default"/>
       </sensors>
-      <params bytecode_file="random_walk_mapping_no_sensing.bo"
-              debug_file="random_walk_mapping_no_sensing.bdb" />
+      <params bytecode_file="random_walk_mapping.bo"
+              debug_file="random_walk_mapping.bdb" />
     </buzz_controller_quadmapper_no_sensing>
 
   </controllers>

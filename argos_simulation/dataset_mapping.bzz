@@ -1,12 +1,12 @@
 include "buzz_includes/buzz_utils/vec2.bzz"
 include "buzz_includes/buzz_utils/string.bzz"
-include "config/buzz_script_parameters.bzz"
-include "config/cpp_controller_parameters.bzz"
-include "config/cpp_controller_no_sensing_parameters.bzz"
-include "buzz_includes/global_variables.bzz"
+include "config/simulation_random_walk/buzz_script_parameters.bzz"
+include "config/simulation_random_walk/cpp_controller_parameters.bzz"
+include "config/simulation_random_walk/cpp_controller_no_sensing_parameters.bzz"
+include "buzz_includes/simulation_random_walk/global_variables.bzz"
 include "buzz_includes/debug.bzz"
-include "buzz_includes/movement.bzz"
-include "buzz_includes/separator.bzz"
+include "buzz_includes/simulation_random_walk/movement.bzz"
+include "buzz_includes/simulation_random_walk/separator.bzz"
 include "buzz_includes/pose_graph_optimization.bzz"
 
 # Executed at init time
