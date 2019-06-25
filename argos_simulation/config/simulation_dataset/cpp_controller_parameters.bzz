@@ -16,10 +16,12 @@ IS_SIMULATION=1
 NUMBER_OF_ROBOTS=5
 ERROR_FILE_NAME="log/datasets/results.csv"
 # Debug parameters
-DEBUG_PRINTS_LEVEL=3 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
+DEBUG_PRINTS_LEVEL=2 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
 NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
-MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=100 # Avoid cases when the convergence is really slow (quite rare)
-MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=100
+MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=10000 # Avoid cases when the convergence is really slow (quite rare)
+MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=10000
+# Optimization
+NUMBER_OF_STEP_BETWEEN_OPTIMIZATION = 1000
 
 function load_cpp_controller_parameters() {
     load_parameters(MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,

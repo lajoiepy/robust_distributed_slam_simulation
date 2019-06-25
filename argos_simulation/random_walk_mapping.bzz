@@ -7,6 +7,7 @@ include "buzz_includes/simulation_random_walk/global_variables.bzz"
 include "buzz_includes/debug.bzz"
 include "buzz_includes/simulation_random_walk/movement.bzz"
 include "buzz_includes/simulation_random_walk/separator.bzz"
+include "buzz_includes/simulation_random_walk/pose_graph_optimization_trigger.bzz"
 include "buzz_includes/pose_graph_optimization.bzz"
 
 # Executed at init time

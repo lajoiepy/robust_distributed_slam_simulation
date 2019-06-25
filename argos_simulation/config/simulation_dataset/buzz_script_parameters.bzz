@@ -9,7 +9,7 @@ ARENA_SIZE = 50.0
 # Tolerance for the collision avoidance with the walls
 ARENA_EDGE_TOLERANCE = 5.0
 # Maximum range for separator detection
-SEPARATOR_RANGE = 5.0
+SEPARATOR_RANGE = 10000.0
 # Slows down the simulation if > 1
 SIMULATION_TIME_DIVIDER = 1
 # To control the number of fake separator detected
