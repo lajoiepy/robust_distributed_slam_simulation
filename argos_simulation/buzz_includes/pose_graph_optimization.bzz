@@ -14,6 +14,7 @@ function listen_for_start_optimization_flag() {
                 }
             )
             if (is_neighbor) {
+                receive_adjacency_vector_from_neighbor(rid_received, value)
                 update_neighbor_has_started_optimization_flag(rid_received)
             }
         }

@@ -22,7 +22,8 @@ function send_start_optimization_flag() {
       if (number_of_steps_with_neighbors > OPTIMIZER_NEIGHBOR_PROXIMITY_PERIOD and
          (NUMBER_OF_ROBOTS == 2 or (not is_same_neighbor)) and
          neighbors_in_communication_range.count() == 1) {
-        neighbors.broadcast("start_optimization", 1)
+        update_adjacency_vector()
+        neighbors.broadcast("start_optimization", adjacency_vector)
         update_has_sent_start_optimization_flag()
       }
     }
