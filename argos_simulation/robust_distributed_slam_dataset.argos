@@ -117,11 +117,11 @@
   <visualization>
     <qt-opengl>
       <camera>
-        <placement idx="0" position="-0.18317,-0.23641,40.045" look_at="-0.18317,-0.23641,17.045" up="-0.999988,0.00479649,0" lens_focal_length="10" />
-        <placement idx="4" position="-0.183538,-0.271409,80.035" look_at="-0.183458,-0.25141,10.0352" lens_focal_length="20" />
-        <placement idx="1" position="-0.318019,-2.69064,2.50564" look_at="-0.290502,-1.79742,2.05687" lens_focal_length="20" />
-        <placement idx="2" position="-1.73201,5.67127,3.87881" look_at="-1.20933,5.17449,3.18598" lens_focal_length="20" />
-        <placement idx="3" position="1.71878,-1.5331,4.94721" look_at="1.17773,-1.81368,4.1544" lens_focal_length="20" />
+        <placement idx="0" position="-0.18317,-0.23641,40.045" look_at="0,0,0" up="0,1,0" lens_focal_length="10" />
+        <placement idx="4" position="-0.183538,-0.271409,80.035" look_at="0,0,0" lens_focal_length="20" />
+        <placement idx="1" position="-0.318019,-2.69064,2.50564" look_at="0,0,0" lens_focal_length="20" />
+        <placement idx="2" position="-1.73201,5.67127,3.87881" look_at="0,0,0" lens_focal_length="20" />
+        <placement idx="3" position="1.71878,-1.5331,4.94721" look_at="0,0,0" lens_focal_length="20" />
       </camera>
        <frame_grabbing directory="log/"
                        base_name="frame_" 

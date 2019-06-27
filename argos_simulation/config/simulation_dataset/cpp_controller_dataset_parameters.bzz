@@ -1,10 +1,8 @@
 # Dataset name
 DATASET_NAME="kitti00"
 # Sensor maximum range
-SENSOR_RANGE=5.0
-# Probability of generating an outlier
-OUTLIER_PROBABILITY=0.0
+SENSOR_RANGE=10.0
 
 function load_cpp_controller_dataset_parameters() {
-    load_dataset_parameters(DATASET_NAME, SENSOR_RANGE, OUTLIER_PROBABILITY)
+    load_dataset_parameters(DATASET_NAME, SENSOR_RANGE, OUTLIER_PERIOD)
 }
