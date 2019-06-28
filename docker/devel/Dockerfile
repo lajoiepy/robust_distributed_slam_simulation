@@ -113,7 +113,7 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
 
 # Compile buzz script
 RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
-    bzzc random_walk_mapping_no_sensing.bzz
+    bzzc random_walk_mapping.bzz
 
 # Setup debug config for visual studio code
 RUN mkdir /home/docker/robust_distributed_slam_simulation/.vscode && touch /home/docker/robust_distributed_slam_simulation/.vscode/launch.json &&\
