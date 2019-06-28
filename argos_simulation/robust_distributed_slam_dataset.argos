@@ -38,28 +38,28 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="100, 100, 4" center="0,0,2">
+  <arena size="75, 75, 4" center="0,0,2">
 
-    <box id="wall_n" size="100, .1, 4" movable="false">
-      <body position="0, 50, 0" orientation="0, 0, 0" />
+    <box id="wall_n" size="75, .1, 4" movable="false">
+      <body position="0, 37.5, 0" orientation="0, 0, 0" />
       <leds medium="leds">
         <led offset="0, -.1, 2.1" anchor="origin" color="red" />
       </leds>
     </box>
 
-    <box id="wall_s" size="100, .1, 4" movable="false">
-      <body position="0, -50, 0" orientation="0, 0, 0" />
+    <box id="wall_s" size="75, .1, 4" movable="false">
+      <body position="0, -37.5, 0" orientation="0, 0, 0" />
       <leds medium="leds">
         <led offset="0, .1, 2.1" anchor="origin" color="blue" />
       </leds>
     </box>
 
-    <box id="wall_w" size=".1, 100, 4" movable="false">
-      <body position="50, 0, 0" orientation="0, 0, 0" />
+    <box id="wall_w" size=".1, 75, 4" movable="false">
+      <body position="37.5, 0, 0" orientation="0, 0, 0" />
     </box>
 
-    <box id="wall_e" size=".1, 100, 4" movable="false">
-      <body position="-50, 0, 0" orientation="0, 0, 0" />
+    <box id="wall_e" size=".1, 75, 4" movable="false">
+      <body position="-37.5, 0, 0" orientation="0, 0, 0" />
     </box>
 
     <!--distribute>
@@ -77,15 +77,15 @@
       <controller config="bcs"/>
     </spiri>
     <spiri id="sp1" rab_range="100000" rab_data_size="100000" camera_range="5">
-      <body position="6.83,15.344,0" orientation="0,0,0" />
+      <body position="6.83,15.344,0" orientation="90,0,0" />
       <controller config="bcs"/>
     </spiri>
     <spiri id="sp2" rab_range="100000" rab_data_size="100000" camera_range="5">
-      <body position="-28.545,-17.731,0" orientation="0,0,0" />
+      <body position="-28.545,-17.731,0" orientation="262,0,0" />
       <controller config="bcs"/>
     </spiri>
     <spiri id="sp3" rab_range="100000" rab_data_size="100000" camera_range="5">
-      <body position="15.362,-7.0976,0" orientation="0,0,0" />
+      <body position="15.362,-7.0976,0" orientation="270,0,0" />
       <controller config="bcs"/>
     </spiri>
     <spiri id="sp4" rab_range="100000" rab_data_size="100000" camera_range="5">
@@ -117,7 +117,7 @@
   <visualization>
     <qt-opengl>
       <camera>
-        <placement idx="0" position="-0.18317,-0.23641,40.045" look_at="0,0,0" up="0,1,0" lens_focal_length="10" />
+        <placement idx="0" position="-0.18317,-0.23641,40.045" look_at="0,0,0" up="0,1,0" lens_focal_length="13" />
         <placement idx="4" position="-0.183538,-0.271409,80.035" look_at="0,0,0" lens_focal_length="20" />
         <placement idx="1" position="-0.318019,-2.69064,2.50564" look_at="0,0,0" lens_focal_length="20" />
         <placement idx="2" position="-1.73201,5.67127,3.87881" look_at="0,0,0" lens_focal_length="20" />
