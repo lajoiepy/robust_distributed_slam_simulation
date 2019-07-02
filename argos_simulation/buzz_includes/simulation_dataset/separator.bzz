@@ -1,45 +1,21 @@
 # Function share information between robots for separator detection without sensing.
-function send_separators_information() {
-  # Broadcast ground truth pose to compute separator measurement only each SIMULATION_TIME_DIVIDER allow communication
-  if (current_step_ % SIMULATION_TIME_DIVIDER == 0) {
-    update_current_pose_estimate(pose_id_)
-    this_robot_ground_truth_pose_and_estimate = {
-      .x = pose.position.x,
-      .y = pose.position.y,
-      .z = pose.position.z,
-      .yaw = pose.orientation.yaw,
-      .pose_id = pose_id_,
-      .estimate = current_pose_estimate
-    }
-    neighbors.broadcast("information_for_separator", this_robot_ground_truth_pose_and_estimate)
+function send_pose_information(pose_id) {
+  update_current_pose_estimate(pose_id)
+  this_robot_pose_estimate = {
+    .pose_id = pose_id,
+    .estimate = current_pose_estimate
   }
+  neighbors.broadcast("pose_information", this_robot_pose_estimate)
 }
 
 # Listen to neighbor poses
-function listen_for_separators_information() {
-  neighbors.listen("information_for_separator",
+function listen_for_pose_information() {
+  neighbors.listen("pose_information",
     function(vid, value, rid) {   
-      current_other_robot_ground_truth_pose_and_estimate = {
-        .value = value,
-        .rid = rid
-      }          
-      # Check if we already have an estimate for this robot, if so update it
-      other_robot_known = 0
-      for (i = 0, i < current_number_of_other_robot_poses_, i = i + 1) {
-        if (current_other_robot_ground_truth_pose_and_estimates_[i].rid == rid) {
-          current_other_robot_ground_truth_pose_and_estimates_[i] = current_other_robot_ground_truth_pose_and_estimate
-          other_robot_known = 1
-        }
-      }
-      # Otherwise add it
-      if (not other_robot_known) {
-        current_other_robot_ground_truth_pose_and_estimates_[current_number_of_other_robot_poses_] = current_other_robot_ground_truth_pose_and_estimate
-        current_number_of_other_robot_poses_ = current_number_of_other_robot_poses_ + 1
-      }
       # Save other robot estimate
-      update_pose_estimate_from_neighbor(current_other_robot_ground_truth_pose_and_estimate.rid, 
-                                        current_other_robot_ground_truth_pose_and_estimate.value.pose_id, 
-                                        current_other_robot_ground_truth_pose_and_estimate.value.estimate)
+      update_pose_estimate_from_neighbor(rid, 
+                                        value.pose_id, 
+                                        value.estimate)
     }
   )  
 }
@@ -61,7 +37,7 @@ function separators_detection_dataset() {
 
     # Separator visualization
     debug.rays.add(0,200,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
-    log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", 0)
+    log("Robot ", id, " : Separator added, is outlier? ", 0)
 
     # Broadcast separator measurements
     neighbors.broadcast("separator_measurements", current_separator_measurement_info)
@@ -80,7 +56,7 @@ function separators_detection_dataset() {
 
           # Separator visualization
           debug.rays.add(200,0,0, current_separator_measurement.x,current_separator_measurement.y,current_separator_measurement.z)
-          log("Robot ", id, " : Separator added with Robot ", current_other_robot_ground_truth_pose_and_estimate.rid, ", is outlier? ", 1)
+          log("Robot ", id, " : Separator added, is outlier? ", 1)
 
           # Broadcast separator measurements
           neighbors.broadcast("separator_measurements", current_separator_measurement_info)
@@ -113,10 +89,12 @@ function listen_for_separators() {
           update_pose_estimate_from_neighbor(measurement.robot_2_id, 
                                             measurement.robot_2_pose_id, 
                                             initial_estimate)
+          send_pose_information(measurement.robot_1_pose_id)
         } else {
           update_pose_estimate_from_neighbor(measurement.robot_1_id, 
                                             measurement.robot_1_pose_id, 
                                             initial_estimate)
+          send_pose_information(measurement.robot_2_pose_id)
         }
       }
       
