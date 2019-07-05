@@ -29,8 +29,8 @@
         <colored_blob_perspective_camera implementation="default" medium="leds" show_rays="true" />
         <positioning                     implementation="default"/>
       </sensors>
-      <params bytecode_file="random_walk_mapping.bo"
-              debug_file="random_walk_mapping.bdb" />
+      <params bytecode_file="/home/docker/robust_distributed_slam_simulation/argos_simulation/random_walk_mapping.bo"
+              debug_file="/home/docker/robust_distributed_slam_simulation/argos_simulation/random_walk_mapping.bdb" />
     </buzz_controller_quadmapper_no_sensing>
 
   </controllers>

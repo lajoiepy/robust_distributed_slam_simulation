@@ -22,7 +22,8 @@ MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=1000 # Avoid cases when the convergence 
 MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=1000
 
 function load_cpp_controller_parameters() {
-    load_parameters(MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
+    load_parameters(OPTIMIZER_PERIOD,
+                    MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
                     MAX_NUMBER_OF_POSE_ESTIMATION_STEPS,
                     NUMBER_OF_STEPS_BEFORE_FAILSAFE,
                     USE_PCM,
