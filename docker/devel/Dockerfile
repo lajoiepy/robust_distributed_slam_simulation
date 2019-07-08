@@ -106,13 +106,14 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distribu
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
     mkdir build &&\
     cd build &&\
-    cmake -DCMAKE_BUILD_TYPE=Debug ../buzz &&\
+    cmake -DCMAKE_BUILD_TYPE=Debug ../src &&\
     make &&\
     make install
 
 # Compile buzz script
 RUN cd /home/docker/robust_distributed_slam_simulation/argos_simulation &&\
-    bzzc random_walk_mapping.bzz
+    bzzc random_walk_mapping.bzz &&\
+    bzzc dataset_mapping.bzz
 
 # Setup debug config for visual studio code
 RUN mkdir /home/docker/robust_distributed_slam_simulation/.vscode && touch /home/docker/robust_distributed_slam_simulation/.vscode/launch.json &&\
