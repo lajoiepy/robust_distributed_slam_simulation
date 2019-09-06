@@ -73,14 +73,14 @@
     </distribute-->
 
     <spiri id="sp0" rab_range="100000" rab_data_size="100000" camera_range="5">
-      <body position="-30,0,0" orientation="0,0,0" />
+      <body position="0,0,0" orientation="0,0,0" />
       <controller config="bcs"/>
     </spiri>
     <spiri id="sp1" rab_range="100000" rab_data_size="100000" camera_range="5">
-      <body position="6.83,15.344,0" orientation="90,0,0" />
+      <body position="0,0,0" orientation="0,0,0" />
       <controller config="bcs"/>
     </spiri>
-    <spiri id="sp2" rab_range="100000" rab_data_size="100000" camera_range="5">
+    <!--spiri id="sp2" rab_range="100000" rab_data_size="100000" camera_range="5">
       <body position="-28.545,-17.731,0" orientation="262,0,0" />
       <controller config="bcs"/>
     </spiri>
@@ -91,7 +91,7 @@
     <spiri id="sp4" rab_range="100000" rab_data_size="100000" camera_range="5">
       <body position="2.942,1.6055,0" orientation="0,0,0" />
       <controller config="bcs"/>
-    </spiri>
+    </spiri-->
 
   </arena>
 
