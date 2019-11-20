@@ -1,5 +1,5 @@
 # Dataset name
-DATASET_NAME="/home/docker/robust_distributed_slam_simulation/argos_simulation/datasets/kitti00"
+DATASET_NAME="/home/docker/robust_distributed_slam_simulation/argos_simulation/datasets/darpa"
 # Sensor maximum range
 SENSOR_RANGE=10.0
 
