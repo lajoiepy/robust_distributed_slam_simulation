@@ -10,11 +10,13 @@ USE_FLAGGED_INITIALIZATION=1
 INCREMENTAL_SOLVING=1
 # Pairwise Consistency Maximization parameters
 USE_PCM = 1
-CONSISTENCY_THRESHOLD = 0.90
+PCM_THRESHOLD = 0.01
+USE_HEURISTICS = 1
 # Simulation specific parameters
 IS_SIMULATION=1
 NUMBER_OF_ROBOTS=5
 ERROR_FILE_NAME="log/datasets/results_simulation.csv"
+LOG_FOLDER="log/datasets/"
 # Debug parameters
 DEBUG_PRINTS_LEVEL=2 # 0: Nothing, 1: Optimization Start/End and Outliers Filtering, 2: Error changes, 3: Optimizers Phase
 NUMBER_OF_STEPS_BEFORE_FAILSAFE=10
@@ -22,12 +24,14 @@ MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS=1000 # Avoid cases when the convergence 
 MAX_NUMBER_OF_POSE_ESTIMATION_STEPS=1000
 
 function load_cpp_controller_parameters() {
-    load_parameters(OPTIMIZER_PERIOD,
+    load_parameters(USE_HEURISTICS,
+                    LOG_FOLDER, 
+                    OPTIMIZER_PERIOD,
                     MAX_NUMBER_OF_ROTATION_ESTIMATION_STEPS,
                     MAX_NUMBER_OF_POSE_ESTIMATION_STEPS,
                     NUMBER_OF_STEPS_BEFORE_FAILSAFE,
                     USE_PCM,
-                    CONSISTENCY_THRESHOLD,
+                    PCM_THRESHOLD,
                     INCREMENTAL_SOLVING,
                     DEBUG_PRINTS_LEVEL,
                     ROTATION_NOISE_STD, TRANSLATION_NOISE_STD,
