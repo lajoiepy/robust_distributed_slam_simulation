@@ -106,7 +106,7 @@ RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam/robust_distribu
 RUN cd /home/docker/robust_distributed_slam_simulation/buzz_slam &&\
     mkdir build &&\
     cd build &&\
-    cmake -DCMAKE_BUILD_TYPE=Debug ../src &&\
+    cmake -DCMAKE_BUILD_TYPE=Debug -DIRL_ROBOT=off -DROS_IRL_ROBOT=off -DARGOS_SIMULATION=on ../src &&\
     make &&\
     make install
 
